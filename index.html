@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Todd's Strava Dashboard</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}body{background:#111;color:#fff;font-family:'Inter',sans-serif}
+    .tab-btn{background:none;border:none;cursor:pointer;color:#888;font-size:14px;font-weight:600;padding:12px 20px;border-bottom:2px solid transparent;transition:all .15s;font-family:'Inter',sans-serif}
+    .tab-btn:hover{color:#fff}.tab-btn.active{color:#fc4c02;border-bottom-color:#fc4c02}
+    .card{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:20px;margin-bottom:20px}
+    .stat-card{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;padding:16px 20px}
+    .grid{display:grid;gap:12px;margin-bottom:20px}
+    .toggle-btn{background:#222;border:1px solid #333;color:#aaa;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600;font-family:'Inter',sans-serif}
+    .toggle-btn.active{background:#fc4c02;border-color:#fc4c02;color:#fff}
+    .section-title{font-size:15px;font-weight:700;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid #2a2a2a}
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const D = {"totals": {"activities": 3908, "distance_km": 137613, "hours": 7750, "elev_m": 6467829, "rides": 1366, "skiDays": 915, "runs": 834, "hikes": 377}, "yearly": [{"year": "2012", "count": 55, "distance_km": 2289, "time_hrs": 98, "rides": 55, "runs": 0, "ski": 0, "hikes": 0, "other": 0, "ride_km": 2289, "run_km": 0, "hike_km": 0}, {"year": "2013", "count": 18, "distance_km": 619, "time_hrs": 24, "rides": 18, "runs": 0, "ski": 0, "hikes": 0, "other": 0, "ride_km": 619, "run_km": 0, "hike_km": 0}, {"year": "2014", "count": 62, "distance_km": 2163, "time_hrs": 81, "rides": 62, "runs": 0, "ski": 0, "hikes": 0, "other": 0, "ride_km": 2163, "run_km": 0, "hike_km": 0}, {"year": "2015", "count": 216, "distance_km": 5127, "time_hrs": 279, "rides": 119, "runs": 44, "ski": 0, "hikes": 37, "other": 16, "ride_km": 4582, "run_km": 263, "hike_km": 282}, {"year": "2016", "count": 349, "distance_km": 6911, "time_hrs": 423, "rides": 84, "runs": 121, "ski": 73, "hikes": 21, "other": 50, "ride_km": 3199, "run_km": 1003, "hike_km": 429}, {"year": "2017", "count": 299, "distance_km": 8486, "time_hrs": 456, "rides": 68, "runs": 119, "ski": 88, "hikes": 5, "other": 19, "ride_km": 3014, "run_km": 1073, "hike_km": 61}, {"year": "2018", "count": 300, "distance_km": 10798, "time_hrs": 589, "rides": 84, "runs": 83, "ski": 89, "hikes": 20, "other": 24, "ride_km": 4207, "run_km": 822, "hike_km": 288}, {"year": "2019", "count": 426, "distance_km": 14860, "time_hrs": 879, "rides": 133, "runs": 122, "ski": 105, "hikes": 35, "other": 31, "ride_km": 7491, "run_km": 1141, "hike_km": 462}, {"year": "2020", "count": 295, "distance_km": 11590, "time_hrs": 621, "rides": 89, "runs": 94, "ski": 80, "hikes": 20, "other": 12, "ride_km": 5668, "run_km": 894, "hike_km": 231}, {"year": "2021", "count": 347, "distance_km": 10867, "time_hrs": 653, "rides": 96, "runs": 150, "ski": 53, "hikes": 35, "other": 13, "ride_km": 5834, "run_km": 1389, "hike_km": 408}, {"year": "2022", "count": 328, "distance_km": 11980, "time_hrs": 686, "rides": 84, "runs": 48, "ski": 102, "hikes": 49, "other": 45, "ride_km": 4041, "run_km": 483, "hike_km": 358}, {"year": "2023", "count": 374, "distance_km": 9189, "time_hrs": 633, "rides": 128, "runs": 19, "ski": 55, "hikes": 55, "other": 117, "ride_km": 3604, "run_km": 263, "hike_km": 637}, {"year": "2024", "count": 333, "distance_km": 14868, "time_hrs": 801, "rides": 149, "runs": 27, "ski": 83, "hikes": 20, "other": 54, "ride_km": 6932, "run_km": 248, "hike_km": 418}, {"year": "2025", "count": 383, "distance_km": 18270, "time_hrs": 1031, "rides": 176, "runs": 6, "ski": 101, "hikes": 67, "other": 33, "ride_km": 8715, "run_km": 48, "hike_km": 810}, {"year": "2026*", "count": 123, "distance_km": 9594, "time_hrs": 495, "rides": 21, "runs": 1, "ski": 86, "hikes": 13, "other": 2, "ride_km": 1222, "run_km": 6, "hike_km": 50}], "skiSeasons": [{"season": "15-16", "days": 66, "vert_m": 209603}, {"season": "16-17", "days": 75, "vert_m": 323836}, {"season": "17-18", "days": 81, "vert_m": 447464}, {"season": "18-19", "days": 107, "vert_m": 617286}, {"season": "19-", "days": 94, "vert_m": 524467}, {"season": "-21", "days": 57, "vert_m": 329320}, {"season": "21-22", "days": 96, "vert_m": 660360}, {"season": "22-23", "days": 65, "vert_m": 486216}, {"season": "23-24", "days": 73, "vert_m": 616160}, {"season": "24-25", "days": 94, "vert_m": 764368}, {"season": "25-26", "days": 107, "vert_m": 909519}], "topRides": [{"name": "C'wood|Phelpston|Penetang|Wasaga", "date": "Aug 14, 2025", "dist_km": 164.33, "elev_m": 804}, {"name": "C'wood|Orr Lake|Balm Beach|Wasaga", "date": "Aug 29, 2024", "dist_km": 147.73, "elev_m": 590}, {"name": "C'wood|Wasaga|NewLowell|Angus", "date": "Sep 20, 2025", "dist_km": 143.24, "elev_m": 354}, {"name": "C'wood|Orr Lake|Balm Beach|Wasaga", "date": "Aug 14, 2024", "dist_km": 140.87, "elev_m": 558}, {"name": "C'wood|Orr Lake|Balm Beach|Wasaga", "date": "Sep 12, 2024", "dist_km": 140.53, "elev_m": 577}], "topSki": [{"name": "Blue Mtn - Mar 27, 2026", "date": "Mar 27, 2026", "vert_m": 14833}, {"name": "Blue Mtn - Mar 29, 2022", "date": "Mar 29, 2022", "vert_m": 13723}, {"name": "Blue Mtn - Mar 28, 2026", "date": "Mar 28, 2026", "vert_m": 13718}, {"name": "Blue Mtn - Apr 1, 2022", "date": "Apr 1, 2022", "vert_m": 13605}, {"name": "Blue Mtn - Feb 8, 2024", "date": "Feb 8, 2024", "vert_m": 13366}], "topRuns": [{"name": "Blue|CSC|ASC|GP Ski Club Loop", "date": "Jun 11, 2021", "dist_km": 22.74}, {"name": "Blue|CSC|ASC|GP Ski Club Loop", "date": "Nov 4, 2018", "dist_km": 21.14}, {"name": "HB.C to Tommy Thompson Park", "date": "Apr 21, 2018", "dist_km": 19.78}, {"name": "C'wood Full Loop", "date": "May 3, 2018", "dist_km": 17.06}], "recentRides": [{"name": "C'Wood|W.B.|Stayner|Blue Loop", "date": "2026-05-19", "dist_km": 68.9, "time_hrs": 2.9, "elev_m": 207}, {"name": "C'wood|Phelpston|Wyeville|Wasaga", "date": "2026-05-18", "dist_km": 117.3, "time_hrs": 4.5, "elev_m": 431}, {"name": "C'wood East End Loop", "date": "2026-05-16", "dist_km": 11.7, "time_hrs": 0.7, "elev_m": 17}, {"name": "C'Wood|Stayner|W.B. Gravel Loop", "date": "2026-05-15", "dist_km": 106.3, "time_hrs": 4.6, "elev_m": 198}, {"name": "C'wood|BlueMtns|Wasaga Beach Trail", "date": "2026-05-11", "dist_km": 71.0, "time_hrs": 3.4, "elev_m": 217}], "recentSki": [], "recentRunHike": [{"name": "Lake Couchiching Beer Loop", "date": "2026-05-17", "dist_km": 3.9, "time_hrs": 0.9, "elev_m": 38, "type": "Walk"}, {"name": "12th Sideroad & 3rd Line O&B", "date": "2026-05-16", "dist_km": 12.2, "time_hrs": 2.4, "elev_m": 347, "type": "Hike"}, {"name": "12th Sideroad & 3rd Line O&B", "date": "2026-05-12", "dist_km": 12.1, "time_hrs": 2.4, "elev_m": 349, "type": "Hike"}, {"name": "Blue|CSC|ASC|GP Ski Club Loop", "date": "2026-05-10", "dist_km": 19.4, "time_hrs": 4.4, "elev_m": 447, "type": "Hike"}, {"name": "12th Sideroad & 3rd Line O&B", "date": "2026-05-09", "dist_km": 12.0, "time_hrs": 2.4, "elev_m": 349, "type": "Hike"}], "lastUpdated": "2026-05-20T07:06:47.035Z"};
+const {useState}=React;
+const {BarChart,Bar,AreaChart,Area,XAxis,YAxis,CartesianGrid,Tooltip,Legend,ResponsiveContainer,ReferenceLine}=Recharts;
+const SO="#fc4c02",BL="#1d9bf0",GR="#22c55e",PU="#a855f7",YE="#f59e0b",RE="#f87171";
+const skiSeasonsFull=D.skiSeasons;
+const monthlyPattern=[
+  {month:"Jan",cycling:1.5,skiing:17.2,running:3.5,hiking:1.2},{month:"Feb",cycling:1.5,skiing:21.2,running:2.2,hiking:1.1},
+  {month:"Mar",cycling:1.7,skiing:18.2,running:2.2,hiking:1.7},{month:"Apr",cycling:7.1,skiing:5.2,running:5.7,hiking:2.7},
+  {month:"May",cycling:11.5,skiing:0,running:6.9,hiking:2.9},{month:"Jun",cycling:12.9,skiing:0,running:5.6,hiking:2.4},
+  {month:"Jul",cycling:16.0,skiing:0,running:5.6,hiking:3.5},{month:"Aug",cycling:16.1,skiing:0,running:5.6,hiking:2.9},
+  {month:"Sep",cycling:12.5,skiing:0,running:5.6,hiking:3.7},{month:"Oct",cycling:10.4,skiing:0,running:6.1,hiking:2.6},
+  {month:"Nov",cycling:7.2,skiing:0.4,running:8.4,hiking:1.4},{month:"Dec",cycling:3.3,skiing:11.5,running:5.5,hiking:2.0},
+];
+const lifeEvents=[{year:"2016",label:"🏥 Spinal Surgery",color:RE},{year:"2021",label:"🏃 Laszlo moves",color:PU},{year:"2023",label:"🦵 Knee",color:YE}];
+const bikes=[
+  {name:"2020 Scott Addict 10 Gravel",dist_km:11975,color:SO},{name:"2021 Scott Addict RC Ultimate",dist_km:9603,color:BL},
+  {name:"Scott 2016 Foil Team Issue",dist_km:8515,color:GR},{name:"Scott Addict 20 Disc 2018",dist_km:5869,color:PU},
+  {name:"Scott Addict RC Ultimate 2020",dist_km:4710,color:YE},
+];
+const lastUpdated=D.lastUpdated?new Date(D.lastUpdated).toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'}):null;
+
+function sc(label,value,color,sub){
+  return React.createElement('div',{className:'stat-card'},
+    React.createElement('div',{style:{fontSize:11,color:'#666',textTransform:'uppercase',letterSpacing:1,marginBottom:4}},label),
+    React.createElement('div',{style:{fontSize:24,fontWeight:800,color:color||'#fff'}},String(value||'—')),
+    sub?React.createElement('div',{style:{fontSize:11,color:'#666',marginTop:2}},sub):null
+  );
+}
+
+function Dashboard(){
+  const [tab,setTab]=useState('Overview');
+  const [imperial,setImperial]=useState(false);
+  const fmtD=v=>imperial?(((v||0)*0.621371).toFixed(1)+' mi'):((v||0).toLocaleString()+' km');
+  const fmtV=v=>imperial?(Math.round((v||0)*3.28084).toLocaleString()+' ft'):((v||0).toLocaleString()+' m');
+  const fmtT=h=>{const hh=Math.floor(h||0),mm=Math.round(((h||0)-hh)*60);return hh+'h'+(mm?' '+mm+'m':'');};
+  const du=imperial?'mi':'km',vu=imperial?'ft':'m';
+  const t=D.totals, yearly=D.yearly, cur=yearly.find(y=>y.year==='2026*')||{};
+  const recentRides=D.recentRides||[], recentSki=D.recentSki||[], recentRunHike=D.recentRunHike||[];
+  const yc=imperial?yearly.map(y=>({...y,ride_km:+((y.ride_km||0)*0.621371).toFixed(1),run_km:+((y.run_km||0)*0.621371).toFixed(1),hike_km:+((y.hike_km||0)*0.621371).toFixed(1)})):yearly;
+  const skc=imperial?skiSeasonsFull.map(s=>({...s,vert_m:Math.round(s.vert_m*3.28084)})):skiSeasonsFull;
+  const tip={contentStyle:{background:'#1a1a1a',border:'1px solid #333',borderRadius:8},labelStyle:{color:'#aaa'}};
+  const TABS=['Overview','Cycling','Running & Hiking','Skiing','Body Stats'];
+
+  return React.createElement('div',{style:{background:'#111',minHeight:'100vh',paddingBottom:60}},
+    React.createElement('div',{style:{background:'linear-gradient(135deg,#1a0a00,#111)',borderBottom:'1px solid #2a2a2a',padding:'20px 28px 0'}},
+      React.createElement('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:10,marginBottom:8}},
+        React.createElement('div',{style:{display:'flex',alignItems:'center',gap:12}},
+          React.createElement('div',{style:{width:38,height:38,borderRadius:9,background:SO,display:'flex',alignItems:'center',justifyContent:'center',fontSize:18}},'🏔️'),
+          React.createElement('div',null,
+            React.createElement('div',{style:{fontSize:20,fontWeight:800}},"Todd's Strava Dashboard"),
+            React.createElement('div',{style:{fontSize:12,color:'#777'}},'14 years · '+(t.activities||0).toLocaleString()+' activities · Since June 2012'+(lastUpdated?' · Updated '+lastUpdated:''))
+          )
+        ),
+        React.createElement('div',{style:{display:'flex',gap:6}},
+          React.createElement('button',{className:'toggle-btn'+(imperial?'':' active'),onClick:()=>setImperial(false)},'km / m'),
+          React.createElement('button',{className:'toggle-btn'+(imperial?' active':''),onClick:()=>setImperial(true)},'mi / ft')
+        )
+      ),
+      React.createElement('div',{style:{display:'flex',overflowX:'auto'}},
+        TABS.map(t2=>React.createElement('button',{key:t2,className:'tab-btn'+(tab===t2?' active':''),onClick:e=>{e.preventDefault();setTab(t2);}},t2))
+      )
+    ),
+    React.createElement('div',{style:{padding:'24px 28px',maxWidth:1400,margin:'0 auto'}},
+      tab==='Overview'&&React.createElement('div',null,
+        React.createElement('div',{className:'grid',style:{gridTemplateColumns:'repeat(auto-fit,minmax(150px,1fr))'}},
+          sc('Total Activities',(t.activities||0).toLocaleString(),SO),
+          sc('Total Distance',fmtD(t.distance_km),'#fff','all sports'),
+          sc('Total Hours',fmtT(t.hours||t.time_hrs)),
+          sc('Ride Distance',fmtD(t.ride_km),SO),
+          sc('Run Distance',fmtD(t.run_km),GR),
+          sc('Ski Days',(t.skiDays||t.ski_count||0).toString(),BL)
+        ),
+        React.createElement('div',{className:'card'},
+          React.createElement('div',{className:'section-title'},'📅 2026 So Far'),
+          React.createElement('div',{style:{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(130px,1fr))',gap:12}},
+            sc('Activities',(cur.count||0).toString()),
+            sc('Ride Distance',fmtD(cur.ride_km),SO),
+            sc('Ski Days',(cur.ski||0).toString(),BL),
+            sc('Hikes',(cur.hikes||0).toString(),YE),
+            sc('Hours',fmtT(cur.time_hrs))
+          )
+        ),
+        React.createElement('div',{className:'card'},
+          React.createElement('div',{className:'section-title'},'📊 Yearly Volume'),
+          React.createElement(ResponsiveContainer,{width:'100%',height:270},
+            React.createElement(BarChart,{data:yearly,margin:{top:5,right:5,left:0,bottom:5}},
+              React.createElement(CartesianGrid,{strokeDasharray:'3 3',stroke:'#222'}),
+              React.createElement(XAxis,{dataKey:'year',stroke:'#555',fontSize:11}),
+              React.createElement(YAxis,{stroke:'#555',fontSize:11}),
+              React.createElement(Tooltip,tip),React.createElement(Legend,null),
+              React.createElement(Bar,{dataKey:'rides',name:'Cycling',fill:SO,stackId:'a'}),
+              React.createElement(Bar,{dataKey:'runs',name:'Running',fill:GR,stackId:'a'}),
+              React.createElement(Bar,{dataKey:'ski',name:'Skiing',fill:BL,stackId:'a'}),
+              React.createElement(Bar,{dataKey:'hikes',name:'Hiking',fill:YE,stackId:'a'}),
+              React.createElement(Bar,{dataKey:'other',name:'Other',fill:'#555',stackId:'a'}),
+              ...lifeEvents.map(e=>React.createElement(ReferenceLine,{key:e.year,x:e.year,stroke:e.color,strokeDasharray:'4 4',label:{value:e.label,fill:e.color,fontSize:10,position:'top'}}))
+            )
+          )
+        ),
+        React.createElement('div',{className:'card'},
+          React.createElement('div',{className:'section-title'},'📅 Monthly Activity Pattern'),
+          React.createElement(ResponsiveContainer,{width:'100%',height:210},
+            React.createElement(BarChart,{data:monthlyPattern,margin:{top:5,right:5,left:0,bottom:5}},
+              React.createElement(CartesianGrid,{strokeDasharray:'3 3',stroke:'#222'}),
+              React.createElement(XAxis,{dataKey:'month',stroke:'#555',fontSize:11}),
+              React.createElement(YAxis,{stroke:'#555',fontSize:11}),
+              React.createElement(Tooltip,tip),React.createElement(Legend,null),
+              React.createElement(Bar,{dataKey:'cycling',name:'Cycling',fill:SO}),
+              React.createElement(Bar,{dataKey:'skiing',name:'Skiing',fill:BL}),
+              React.createElement(Bar,{dataKey:'running',name:'Running',fill:GR}),
+              React.createElement(Bar,{dataKey:'hiking',name:'Hiking',fill:YE})
+            )
+          )
+        )
+      ),
+      tab==='Cycling'&&React.createElement('div',null,
+        React.createElement('div',{className:'grid',style:{gridTemplateColumns:'repeat(auto-fit,minmax(150px,1fr))'}},
+          sc('Total Rides',(t.rides||t.ride_count||0).toLocaleString(),SO),
+          sc('Total Distance',fmtD(t.ride_km),SO),
+          sc('2026 Rides',(cur.rides||0).toString()),
+          sc('2026 Distance',fmtD(cur.ride_km),SO)
+        ),
+        React.createElement('div',{className:'card'},
+          React.createElement('div',{className:'section-title'},'🚴 Ride Distance by Year ('+du+')'),
+          React.createElement(ResponsiveContainer,{width:'100%',height:250},
+            React.createElement(BarChart,{data:yc,margin:{top:5,right:5,left:0,bottom:5}},
+              React.createElement(CartesianGrid,{strokeDasharray:'3 3',stroke:'#222'}),
+              React.createElement(XAxis,{dataKey:'year',stroke:'#555',fontSize:11}),
+              React.createElement(YAxis,{stroke:'#555',fontSize:11}),
+              React.createElement(Tooltip,tip),
+              React.createElement(Bar,{dataKey:'ride_km',name:'Distance ('+du+')',fill:SO,radius:[4,4,0,0]})
+            )
+          )
+        ),
+        React.createElement('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16}},
+          React.createElement('div',{className:'card'},
+            React.createElement('div',{className:'section-title'},'🏆 Top 5 Rides'),
+            D.topRides.map((r,i)=>React.createElement('div',{key:i,style:{display:'flex',justifyContent:'space-between',padding:'8px 0',borderBottom:i<4?'1px solid #1e1e1e':'none',fontSize:13}},
+              React.createElement('div',null,React.createElement('div',{style:{fontWeight:600}},r.name),React.createElement('div',{style:{color:'#666',fontSize:11}},r.date)),
+              React.createElement('div',{style:{color:SO,fontWeight:700,textAlign:'right'}},fmtD(r.dist_km),React.createElement('div',{style:{fontSize:11,color:'#666'}},fmtV(r.elev_m)))
+            ))
+          ),
+          React.createElement('div',{className:'card'},
+            React.createElement('div',{className:'section-title'},'🚲 Fleet'),
+            bikes.map((b,i)=>React.createElement('div',{key:i,style:{display:'flex',justifyContent:'space-between',padding:'7px 0',borderBottom:i<bikes.length-1?'1px solid #1e1e1e':'none',fontSize:12}},
+              React.createElement('span',{style:{fontWeight:600,color:b.color}},b.name),
+              React.createElement('span',{style:{color:'#aaa'}},fmtD(b.dist_km))
+            ))
+          )
+        ),
+        React.createElement('div',{className:'card',style:{marginTop:16}},
+          React.createElement('div',{className:'section-title'},'📋 Last 7 Days — Cycling'),
+          recentRides.length===0
+            ?React.createElement('div',{style:{color:'#555',textAlign:'center',padding:'20px 0',fontSize:13}},'No rides in the last 7 days')
+            :React.createElement('div',null,
+              React.createElement('div',{style:{display:'grid',gridTemplateColumns:'100px 1fr 90px 70px 80px',gap:8,paddingBottom:8,fontSize:11,color:'#555',textTransform:'uppercase',letterSpacing:0.5}},
+                React.createElement('span',null,'Date'),React.createElement('span',null,'Name'),React.createElement('span',null,'Dist'),React.createElement('span',null,'Time'),React.createElement('span',null,'Elev')
+              ),
+              recentRides.slice(0,7).map((r,i)=>React.createElement('div',{key:i,style:{display:'grid',gridTemplateColumns:'100px 1fr 90px 70px 80px',gap:8,padding:'9px 0',borderTop:'1px solid #1e1e1e',fontSize:13,alignItems:'center'}},
+                React.createElement('span',{style:{color:'#777'}},r.date?new Date(r.date).toLocaleDateString('en-CA',{month:'short',day:'numeric'}):'—'),
+                React.createElement('span',{style:{fontWeight:500,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}},r.name||'—'),
+                React.createElement('span',{style:{color:SO,fontWeight:600}},r.dist_km||r.distance_km?fmtD(r.dist_km||r.distance_km):'—'),
+                React.createElement('span',{style:{color:'#aaa'}},r.time_hrs?fmtT(r.time_hrs):'—'),
+                React.createElement('span',{style:{color:'#aaa'}},r.elev_m||r.elevation_m?fmtV(r.elev_m||r.elevation_m):'—')
+              ))
+            )
+        )
+      ),
+      tab==='Running & Hiking'&&React.createElement('div',null,
+        React.createElement('div',{className:'grid',style:{gridTemplateColumns:'repeat(auto-fit,minmax(150px,1fr))'}},
+          sc('Total Runs',(t.runs||t.run_count||0).toLocaleString(),GR),
+          sc('Run Distance',fmtD(t.run_km),GR),
+          sc('Total Hikes',(t.hikes||t.hike_count||0).toLocaleString(),YE),
+          sc('Hike Distance',fmtD(t.hike_km),YE)
+        ),
+        React.createElement('div',{style:{background:'linear-gradient(135deg,#1a1a00,#111)',border:'1px solid #3a3a00',borderRadius:12,padding:'14px 18px',marginBottom:20}},
+          React.createElement('div',{style:{fontSize:13,fontWeight:700,color:YE,marginBottom:5}},'💡 2025 Hike Strategy — The Training Edge'),
+          React.createElement('div',{style:{fontSize:13,color:'#ccc',lineHeight:1.6}},'67 hikes in 2025 on the 12th Concession & 3rd Line — ~1,200 ft per outing. Deliberate post-knee reconstruction training that directly enabled a 107-day, 909,519m ski season in 2025-26.')
+        ),
+        React.createElement('div',{className:'card'},
+          React.createElement('div',{className:'section-title'},'🏃 Run & Hike Distance by Year ('+du+')'),
+          React.createElement(ResponsiveContainer,{width:'100%',height:250},
+            React.createElement(BarChart,{data:yc,margin:{top:5,right:5,left:0,bottom:5}},
+              React.createElement(CartesianGrid,{strokeDasharray:'3 3',stroke:'#222'}),
+              React.createElement(XAxis,{dataKey:'year',stroke:'#555',fontSize:11}),
+              React.createElement(YAxis,{stroke:'#555',fontSize:11}),
+              React.createElement(Tooltip,tip),React.createElement(Legend,null),
+              React.createElement(Bar,{dataKey:'run_km',name:'Run ('+du+')',fill:GR}),
+              React.createElement(Bar,{dataKey:'hike_km',name:'Hike ('+du+')',fill:YE})
+            )
+          )
+        ),
+        React.createElement('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16}},
+          React.createElement('div',{className:'card'},
+            React.createElement('div',{className:'section-title'},'🏆 Top 5 Runs'),
+            D.topRuns.map((r,i)=>React.createElement('div',{key:i,style:{display:'flex',justifyContent:'space-between',padding:'8px 0',borderBottom:i<D.topRuns.length-1?'1px solid #1e1e1e':'none',fontSize:13}},
+              React.createElement('div',null,React.createElement('div',{style:{fontWeight:600}},r.name),React.createElement('div',{style:{color:'#666',fontSize:11}},r.date)),
+              React.createElement('div',{style:{color:GR,fontWeight:700}},fmtD(r.dist_km))
+            ))
+          ),
+          React.createElement('div',{className:'card'},
+            React.createElement('div',{className:'section-title'},'📋 Last 7 Days — Run & Hike'),
+            recentRunHike.length===0
+              ?React.createElement('div',{style:{color:'#555',textAlign:'center',padding:'20px 0',fontSize:13}},'No recent activity')
+              :recentRunHike.slice(0,7).map((r,i)=>{
+                const isRun=(r.type||r.sport||'').toLowerCase().includes('run');
+                return React.createElement('div',{key:i,style:{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'8px 0',borderBottom:i<recentRunHike.length-1?'1px solid #1e1e1e':'none',fontSize:13}},
+                  React.createElement('div',null,
+                    React.createElement('div',{style:{fontWeight:500}},(isRun?'🏃 ':'🥾 ')+(r.name||'—')),
+                    React.createElement('div',{style:{color:'#666',fontSize:11}},r.date?new Date(r.date).toLocaleDateString('en-CA',{month:'short',day:'numeric'}):'—')
+                  ),
+                  React.createElement('div',{style:{color:isRun?GR:YE,fontWeight:600}},r.dist_km||r.distance_km?fmtD(r.dist_km||r.distance_km):'—')
+                );
+              })
+          )
+        )
+      ),
+      tab==='Skiing'&&React.createElement('div',null,
+        React.createElement('div',{className:'grid',style:{gridTemplateColumns:'repeat(auto-fit,minmax(150px,1fr))'}},
+          sc('Total Ski Days',(t.skiDays||t.ski_count||0).toLocaleString(),BL),
+          sc('25-26 Days','107',BL),
+          sc('25-26 Vertical',fmtV(909519),BL),
+          sc('Best Day Vert',fmtV(14833),PU,'Mar 27, 2026')
+        ),
+        React.createElement('div',{className:'card'},
+          React.createElement('div',{className:'section-title'},'⛷️ Seasonal Vertical ('+vu+')'),
+          React.createElement(ResponsiveContainer,{width:'100%',height:270},
+            React.createElement(BarChart,{data:skc,margin:{top:5,right:5,left:0,bottom:5}},
+              React.createElement(CartesianGrid,{strokeDasharray:'3 3',stroke:'#222'}),
+              React.createElement(XAxis,{dataKey:'season',stroke:'#555',fontSize:11}),
+              React.createElement(YAxis,{stroke:'#555',fontSize:11}),
+              React.createElement(Tooltip,{...tip,formatter:v=>[v.toLocaleString()+' '+vu,'Vertical']}),
+              React.createElement(Bar,{dataKey:'vert_m',name:'Vertical',fill:BL,radius:[4,4,0,0]})
+            )
+          )
+        ),
+        React.createElement('div',{className:'card'},
+          React.createElement('div',{className:'section-title'},'📅 Ski Days per Season'),
+          React.createElement(ResponsiveContainer,{width:'100%',height:190},
+            React.createElement(BarChart,{data:skiSeasonsFull,margin:{top:5,right:5,left:0,bottom:5}},
+              React.createElement(CartesianGrid,{strokeDasharray:'3 3',stroke:'#222'}),
+              React.createElement(XAxis,{dataKey:'season',stroke:'#555',fontSize:11}),
+              React.createElement(YAxis,{stroke:'#555',fontSize:11}),
+              React.createElement(Tooltip,tip),
+              React.createElement(Bar,{dataKey:'days',name:'Days',fill:'#38bdf8',radius:[4,4,0,0]})
+            )
+          )
+        ),
+        React.createElement('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16}},
+          React.createElement('div',{className:'card'},
+            React.createElement('div',{className:'section-title'},'🏆 Top 5 Ski Days'),
+            D.topSki.map((r,i)=>React.createElement('div',{key:i,style:{display:'flex',justifyContent:'space-between',padding:'8px 0',borderBottom:i<4?'1px solid #1e1e1e':'none',fontSize:13}},
+              React.createElement('div',null,React.createElement('div',{style:{fontWeight:600}},r.name),React.createElement('div',{style:{color:'#666',fontSize:11}},r.date)),
+              React.createElement('div',{style:{color:BL,fontWeight:700}},fmtV(r.vert_m))
+            ))
+          ),
+          React.createElement('div',{className:'card'},
+            React.createElement('div',{className:'section-title'},'📋 Last 7 Days — Skiing'),
+            recentSki.length===0
+              ?React.createElement('div',{style:{color:'#555',textAlign:'center',padding:'20px 0',fontSize:13}},'No ski days in the last 7 days — season is over! ⛷️')
+              :recentSki.slice(0,7).map((r,i)=>React.createElement('div',{key:i,style:{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'8px 0',borderBottom:i<recentSki.length-1?'1px solid #1e1e1e':'none',fontSize:13}},
+                React.createElement('div',null,React.createElement('div',{style:{fontWeight:500}},r.name||'—'),React.createElement('div',{style:{color:'#666',fontSize:11}},r.date?new Date(r.date).toLocaleDateString('en-CA',{month:'short',day:'numeric'}):'—')),
+                React.createElement('div',{style:{color:BL,fontWeight:600}},r.elev_m||r.elevation_m?fmtV(r.elev_m||r.elevation_m):'—')
+              ))
+          )
+        )
+      ),
+      tab==='Body Stats'&&React.createElement('div',null,
+        React.createElement('div',{style:{color:'#555',textAlign:'center',padding:60,fontSize:15}},'Body stats are updated nightly — check back soon.')
+      )
+    )
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Dashboard));
+</script></body></html>
