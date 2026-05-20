@@ -12,22 +12,28 @@ body{background:#111;color:#fff;font-family:'Inter',sans-serif;min-height:100vh}
 </head>
 <body>
 <div id="root"></div>
-<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-<script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js" crossorigin></script>
-<script>
-if (!window.React || !window.ReactDOM || !window.Recharts) {
-  document.getElementById('root').innerHTML = '<div style="color:red;padding:40px;font-family:monospace">CDN load failed - check connection</div>';
-  throw new Error('CDN missing');
-}
-const { useState, useEffect, useRef, useCallback, useMemo } = React;
-const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Area, AreaChart, Cell, ReferenceLine, LineChart, Line } = Recharts;
 
-// Entity shims (not used - data is embedded in useEffect)
+<!-- Load dependencies in order, with prop-types which Recharts needs -->
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/prop-types@15/prop-types.min.js"></script>
+<script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
+
+<script>
+// Shim entity APIs (data is embedded directly in useEffect)
 const StravaCache = { filter: async () => [] };
 const BodyStats = { list: async () => [], create: async () => {} };
 const BikeComponent = { list: async () => [], create: async () => {}, update: async () => {} };
+
+// Destructure into global scope for compiled code
+const { useState, useEffect, useRef, useCallback, useMemo } = React;
+const {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
+  ResponsiveContainer, Area, AreaChart, Cell, ReferenceLine,
+  LineChart, Line, ComposedChart, Scatter, ScatterChart
+} = Recharts;
 </script>
+
 <script>
 const STRAVA_ORANGE = "#fc4c02";
 const BLUE = "#1d9bf0";
@@ -3649,11 +3655,17 @@ function Dashboard() {
     setUploading: setUploading
   })));
 }
-try {
-  ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Dashboard));
-} catch(e) {
-  document.getElementById('root').innerHTML = '<div style="color:red;padding:40px;font-family:monospace;white-space:pre">Error: ' + e.message + '\n' + (e.stack||'') + '</div>';
-}
+
+// Mount — wrap in window.onload to ensure all scripts are ready
+window.addEventListener('load', function() {
+  try {
+    ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Dashboard));
+  } catch(e) {
+    document.getElementById('root').innerHTML =
+      '<div style="color:red;padding:40px;font-family:monospace;white-space:pre-wrap;background:#1a0000">' +
+      '<b>Error:</b> ' + e.message + '\n\n' + (e.stack||'') + '</div>';
+  }
+});
 </script>
 </body>
 </html>
