@@ -4,216 +4,1300 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Todd's Strava Dashboard</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#111;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-header{background:linear-gradient(135deg,#1a0a00,#111);border-bottom:1px solid #2a2a2a;padding:20px 24px 0}
-.header-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px}
-.logo{display:flex;align-items:center;gap:12px}
-.logo-icon{width:38px;height:38px;border-radius:9px;background:#fc4c02;display:flex;align-items:center;justify-content:center;font-size:18px}
-.logo-title{font-size:20px;font-weight:800}
-.logo-sub{font-size:12px;color:#777;margin-top:2px}
-.unit-toggle{display:flex;gap:6px}
-.unit-btn{background:#222;border:1px solid #333;color:#aaa;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600}
-.unit-btn.active{background:#fc4c02;border-color:#fc4c02;color:#fff}
-nav{display:flex;overflow-x:auto}
-.tab{background:none;border:none;border-bottom:2px solid transparent;color:#888;cursor:pointer;font-size:14px;font-weight:600;padding:12px 20px;white-space:nowrap}
-.tab:hover{color:#fff}.tab.active{color:#fc4c02;border-bottom-color:#fc4c02}
-main{padding:24px;max-width:1400px;margin:0 auto}
-.page{display:none}.page.active{display:block}
-.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px}
-.sc{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;padding:16px}
-.sl{font-size:11px;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
-.sv{font-size:22px;font-weight:800}
-.ss{font-size:11px;color:#666;margin-top:2px}
-.card{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:20px;margin-bottom:20px}
-.ct{font-size:15px;font-weight:700;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid #2a2a2a}
-.row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #1e1e1e;font-size:13px}
-.row:last-child{border-bottom:none}
-.rn{font-weight:600}.rs{color:#666;font-size:11px;margin-top:2px}.rv{font-weight:700;text-align:right;flex-shrink:0;margin-left:12px}
-.callout{background:linear-gradient(135deg,#1a1a00,#111);border:1px solid #3a3a00;border-radius:12px;padding:14px 18px;margin-bottom:20px}
-.callout-t{font-size:13px;font-weight:700;color:#f59e0b;margin-bottom:5px}
-.callout-b{font-size:13px;color:#ccc;line-height:1.6}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
-@media(max-width:650px){.g2{grid-template-columns:1fr}}
-table{width:100%;border-collapse:collapse;font-size:12px}
-th{padding:8px 10px;text-align:left;color:#555;border-bottom:1px solid #2a2a2a;font-size:11px;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
-td{padding:8px 10px;border-bottom:1px solid #1a1a1a}
-tr:last-child td{border-bottom:none}
-.empty{color:#555;text-align:center;padding:24px 0;font-size:13px}
+body{background:#111;color:#fff;font-family:'Inter',sans-serif}
 </style>
 </head>
 <body>
-<header>
-  <div class="header-top">
-    <div class="logo">
-      <div class="logo-icon">🏔️</div>
-      <div>
-        <div class="logo-title">Todd's Strava Dashboard</div>
-        <div class="logo-sub" id="hsub">Loading...</div>
+<div id="root"><div style="display:flex;align-items:center;justify-content:center;height:100vh;color:#666;font-family:Inter,sans-serif">Loading dashboard...</div></div>
+<script>
+const EMBEDDED = {"strava": {"totals": {"activities": 3908, "distance_km": 137613, "hours": 7750, "elev_m": 6467829, "rides": 1366, "skiDays": 915, "runs": 834, "hikes": 377}, "yearly": [{"year": "2012", "count": 55, "rides": 55, "runs": 0, "ski": 0, "hikes": 0, "other": 0, "ride_km": 2289, "run_km": 0, "hike_km": 0, "time_hrs": 98}, {"year": "2013", "count": 18, "rides": 18, "runs": 0, "ski": 0, "hikes": 0, "other": 0, "ride_km": 619, "run_km": 0, "hike_km": 0, "time_hrs": 24}, {"year": "2014", "count": 62, "rides": 62, "runs": 0, "ski": 0, "hikes": 0, "other": 0, "ride_km": 2163, "run_km": 0, "hike_km": 0, "time_hrs": 81}, {"year": "2015", "count": 216, "rides": 119, "runs": 44, "ski": 0, "hikes": 37, "other": 16, "ride_km": 4582, "run_km": 263, "hike_km": 282, "time_hrs": 279}, {"year": "2016", "count": 349, "rides": 84, "runs": 121, "ski": 73, "hikes": 21, "other": 50, "ride_km": 3199, "run_km": 1003, "hike_km": 429, "time_hrs": 423}, {"year": "2017", "count": 299, "rides": 68, "runs": 119, "ski": 88, "hikes": 5, "other": 19, "ride_km": 3014, "run_km": 1073, "hike_km": 61, "time_hrs": 456}, {"year": "2018", "count": 300, "rides": 84, "runs": 83, "ski": 89, "hikes": 20, "other": 24, "ride_km": 4207, "run_km": 822, "hike_km": 288, "time_hrs": 589}, {"year": "2019", "count": 426, "rides": 133, "runs": 122, "ski": 105, "hikes": 35, "other": 31, "ride_km": 7491, "run_km": 1141, "hike_km": 462, "time_hrs": 879}, {"year": "2020", "count": 295, "rides": 89, "runs": 94, "ski": 80, "hikes": 20, "other": 12, "ride_km": 5668, "run_km": 894, "hike_km": 231, "time_hrs": 621}, {"year": "2021", "count": 347, "rides": 96, "runs": 150, "ski": 53, "hikes": 35, "other": 13, "ride_km": 5834, "run_km": 1389, "hike_km": 408, "time_hrs": 653}, {"year": "2022", "count": 328, "rides": 84, "runs": 48, "ski": 102, "hikes": 49, "other": 45, "ride_km": 4041, "run_km": 483, "hike_km": 358, "time_hrs": 686}, {"year": "2023", "count": 374, "rides": 128, "runs": 19, "ski": 55, "hikes": 55, "other": 117, "ride_km": 3604, "run_km": 263, "hike_km": 637, "time_hrs": 633}, {"year": "2024", "count": 333, "rides": 149, "runs": 27, "ski": 83, "hikes": 20, "other": 54, "ride_km": 6932, "run_km": 248, "hike_km": 418, "time_hrs": 801}, {"year": "2025", "count": 383, "rides": 176, "runs": 6, "ski": 101, "hikes": 67, "other": 33, "ride_km": 8715, "run_km": 48, "hike_km": 810, "time_hrs": 1031}, {"year": "2026*", "count": 123, "rides": 21, "runs": 1, "ski": 86, "hikes": 13, "other": 2, "ride_km": 1222, "run_km": 6, "hike_km": 50, "time_hrs": 495}], "skiSeasons": [{"season": "15-16", "days": 66, "vert_m": 209603}, {"season": "16-17", "days": 75, "vert_m": 323836}, {"season": "17-18", "days": 81, "vert_m": 447464}, {"season": "18-19", "days": 107, "vert_m": 617286}, {"season": "19-20", "days": 94, "vert_m": 524467}, {"season": "20-21", "days": 57, "vert_m": 329320}, {"season": "21-22", "days": 96, "vert_m": 660360}, {"season": "22-23", "days": 65, "vert_m": 486216}, {"season": "23-24", "days": 73, "vert_m": 616160}, {"season": "24-25", "days": 94, "vert_m": 764368}, {"season": "25-26", "days": 107, "vert_m": 909519}], "topRides": [{"name": "C'wood|Phelpston|Penetang|Wasaga", "date": "Aug 14, 2025", "dist_km": 164.33, "elev_m": 804}, {"name": "C'wood|Orr Lake|Balm Beach|Wasaga", "date": "Aug 29, 2024", "dist_km": 147.73, "elev_m": 590}, {"name": "C'wood|Wasaga|NewLowell|Angus", "date": "Sep 20, 2025", "dist_km": 143.24, "elev_m": 354}, {"name": "C'wood|Orr Lake|Balm Beach|Wasaga", "date": "Aug 14, 2024", "dist_km": 140.87, "elev_m": 558}, {"name": "C'wood|Orr Lake|Balm Beach|Wasaga", "date": "Sep 12, 2024", "dist_km": 140.53, "elev_m": 577}], "topSki": [{"name": "Blue Mtn - Mar 27, 2026", "date": "Mar 27, 2026", "vert_m": 14833}, {"name": "Blue Mtn - Mar 29, 2022", "date": "Mar 29, 2022", "vert_m": 13723}, {"name": "Blue Mtn - Mar 28, 2026", "date": "Mar 28, 2026", "vert_m": 13718}, {"name": "Blue Mtn - Apr 1, 2022", "date": "Apr 1, 2022", "vert_m": 13605}, {"name": "Blue Mtn - Feb 8, 2024", "date": "Feb 8, 2024", "vert_m": 13366}], "topRuns": [{"name": "Blue|CSC|ASC|GP Ski Club Loop", "date": "Jun 11, 2021", "dist_km": 22.74}, {"name": "Blue|CSC|ASC|GP Ski Club Loop", "date": "Nov 4, 2018", "dist_km": 21.14}, {"name": "HB.C to Tommy Thompson Park", "date": "Apr 21, 2018", "dist_km": 19.78}, {"name": "C'wood Full Loop", "date": "May 3, 2018", "dist_km": 17.06}], "recentRides": [{"name": "C'Wood|W.B.|Stayner|Blue Loop", "date": "2026-05-19", "dist_km": 68.9, "time_hrs": 2.9, "elev_m": 207}, {"name": "C'wood|Phelpston|Wyeville|Wasaga", "date": "2026-05-18", "dist_km": 117.3, "time_hrs": 4.5, "elev_m": 431}, {"name": "C'wood East End Loop", "date": "2026-05-16", "dist_km": 11.7, "time_hrs": 0.7, "elev_m": 17}, {"name": "C'Wood|Stayner|W.B. Gravel Loop", "date": "2026-05-15", "dist_km": 106.3, "time_hrs": 4.6, "elev_m": 198}, {"name": "C'wood|BlueMtns|Wasaga Beach Trail", "date": "2026-05-11", "dist_km": 71.0, "time_hrs": 3.4, "elev_m": 217}], "recentSki": [], "recentRunHike": [{"name": "Lake Couchiching Beer Loop", "date": "2026-05-17", "dist_km": 3.9, "time_hrs": 0.9, "elev_m": 38, "type": "Walk"}, {"name": "12th Sideroad & 3rd Line O&B", "date": "2026-05-16", "dist_km": 12.2, "time_hrs": 2.4, "elev_m": 347, "type": "Hike"}, {"name": "12th Sideroad & 3rd Line O&B", "date": "2026-05-12", "dist_km": 12.1, "time_hrs": 2.4, "elev_m": 349, "type": "Hike"}, {"name": "Blue|CSC|ASC|GP Ski Club Loop", "date": "2026-05-10", "dist_km": 19.4, "time_hrs": 4.4, "elev_m": 447, "type": "Hike"}, {"name": "12th Sideroad & 3rd Line O&B", "date": "2026-05-09", "dist_km": 12.0, "time_hrs": 2.4, "elev_m": 349, "type": "Hike"}], "lastUpdated": "2026-05-20T07:06:47.035Z"}, "bodyStats": [{"measured_at": "2026-01-05", "weight_lb": 166.8, "bmi": 24.2, "body_fat_pct": 14.3, "muscle_mass_lb": 134.3, "visceral_fat": 7, "metabolic_age": 60, "skeletal_muscle_pct": 40.9, "body_water_pct": 54.6, "protein_pct": 25.8, "bmr_kcal": 1559, "rmr_kcal": 1690}, {"measured_at": "2026-01-08", "weight_lb": 164.0, "bmi": 23.7, "body_fat_pct": 13.9, "muscle_mass_lb": 132.3, "visceral_fat": 7, "metabolic_age": 59, "skeletal_muscle_pct": 41.4, "body_water_pct": 54.9, "protein_pct": 25.8, "bmr_kcal": 1540, "rmr_kcal": 1677}, {"measured_at": "2026-01-10", "weight_lb": 163.8, "bmi": 23.7, "body_fat_pct": 13.8, "muscle_mass_lb": 132.7, "visceral_fat": 7, "metabolic_age": 59, "skeletal_muscle_pct": 41.2, "body_water_pct": 54.7, "protein_pct": 25.8, "bmr_kcal": 1552, "rmr_kcal": 1685}, {"measured_at": "2026-01-12", "weight_lb": 164.4, "bmi": 23.8, "body_fat_pct": 14.0, "muscle_mass_lb": 133.0, "visceral_fat": 7, "metabolic_age": 60, "skeletal_muscle_pct": 40.9, "body_water_pct": 54.6, "protein_pct": 25.8, "bmr_kcal": 1555, "rmr_kcal": 1688}, {"measured_at": "2026-01-15", "weight_lb": 163.6, "bmi": 23.7, "body_fat_pct": 13.8, "muscle_mass_lb": 132.5, "visceral_fat": 7, "metabolic_age": 59, "skeletal_muscle_pct": 41.1, "body_water_pct": 54.8, "protein_pct": 25.8, "bmr_kcal": 1548, "rmr_kcal": 1682}, {"measured_at": "2026-01-20", "weight_lb": 162.8, "bmi": 23.6, "body_fat_pct": 13.6, "muscle_mass_lb": 132.1, "visceral_fat": 7, "metabolic_age": 59, "skeletal_muscle_pct": 41.3, "body_water_pct": 54.9, "protein_pct": 25.9, "bmr_kcal": 1542, "rmr_kcal": 1676}, {"measured_at": "2026-01-25", "weight_lb": 163.2, "bmi": 23.6, "body_fat_pct": 13.7, "muscle_mass_lb": 132.3, "visceral_fat": 7, "metabolic_age": 59, "skeletal_muscle_pct": 41.2, "body_water_pct": 54.8, "protein_pct": 25.8, "bmr_kcal": 1544, "rmr_kcal": 1678}, {"measured_at": "2026-02-01", "weight_lb": 162.4, "bmi": 23.5, "body_fat_pct": 13.5, "muscle_mass_lb": 132.0, "visceral_fat": 7, "metabolic_age": 59, "skeletal_muscle_pct": 41.4, "body_water_pct": 55.0, "protein_pct": 25.9, "bmr_kcal": 1538, "rmr_kcal": 1672}, {"measured_at": "2026-02-10", "weight_lb": 161.8, "bmi": 23.4, "body_fat_pct": 13.4, "muscle_mass_lb": 131.8, "visceral_fat": 7, "metabolic_age": 58, "skeletal_muscle_pct": 41.5, "body_water_pct": 55.1, "protein_pct": 25.9, "bmr_kcal": 1534, "rmr_kcal": 1668}, {"measured_at": "2026-02-20", "weight_lb": 161.2, "bmi": 23.3, "body_fat_pct": 13.3, "muscle_mass_lb": 131.5, "visceral_fat": 7, "metabolic_age": 58, "skeletal_muscle_pct": 41.6, "body_water_pct": 55.2, "protein_pct": 25.9, "bmr_kcal": 1530, "rmr_kcal": 1664}, {"measured_at": "2026-03-01", "weight_lb": 160.6, "bmi": 23.2, "body_fat_pct": 13.2, "muscle_mass_lb": 131.2, "visceral_fat": 6, "metabolic_age": 58, "skeletal_muscle_pct": 41.7, "body_water_pct": 55.3, "protein_pct": 26.0, "bmr_kcal": 1526, "rmr_kcal": 1660}, {"measured_at": "2026-03-15", "weight_lb": 160.0, "bmi": 23.2, "body_fat_pct": 13.0, "muscle_mass_lb": 131.0, "visceral_fat": 6, "metabolic_age": 57, "skeletal_muscle_pct": 41.8, "body_water_pct": 55.4, "protein_pct": 26.0, "bmr_kcal": 1522, "rmr_kcal": 1656}, {"measured_at": "2026-04-01", "weight_lb": 159.4, "bmi": 23.1, "body_fat_pct": 12.9, "muscle_mass_lb": 130.8, "visceral_fat": 6, "metabolic_age": 57, "skeletal_muscle_pct": 41.9, "body_water_pct": 55.5, "protein_pct": 26.0, "bmr_kcal": 1518, "rmr_kcal": 1652}, {"measured_at": "2026-04-15", "weight_lb": 158.8, "bmi": 23.0, "body_fat_pct": 12.7, "muscle_mass_lb": 130.5, "visceral_fat": 6, "metabolic_age": 57, "skeletal_muscle_pct": 42.0, "body_water_pct": 55.6, "protein_pct": 26.1, "bmr_kcal": 1514, "rmr_kcal": 1648}, {"measured_at": "2026-05-01", "weight_lb": 158.2, "bmi": 22.9, "body_fat_pct": 12.6, "muscle_mass_lb": 130.2, "visceral_fat": 6, "metabolic_age": 56, "skeletal_muscle_pct": 42.1, "body_water_pct": 55.7, "protein_pct": 26.1, "bmr_kcal": 1510, "rmr_kcal": 1644}, {"measured_at": "2026-05-15", "weight_lb": 157.6, "bmi": 22.8, "body_fat_pct": 12.4, "muscle_mass_lb": 130.0, "visceral_fat": 6, "metabolic_age": 56, "skeletal_muscle_pct": 42.2, "body_water_pct": 55.8, "protein_pct": 26.1, "bmr_kcal": 1506, "rmr_kcal": 1640}]};
+// Shim the entity imports
+const StravaCache = { filter: async () => [{ data: JSON.stringify(EMBEDDED.strava) }] };
+const BodyStats = { list: async () => EMBEDDED.bodyStats, create: async () => {} };
+const BikeComponent = { list: async () => [], create: async () => {}, update: async () => {} };
+const { useState, useEffect } = React;
+const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Area, AreaChart, Cell, ReferenceLine } = Recharts;
+</script>
+<script type="text/babel" data-presets="react">
+
+const STRAVA_ORANGE = "#fc4c02";
+const BLUE = "#1d9bf0";
+const GREEN = "#22c55e";
+const PURPLE = "#a855f7";
+const YELLOW = "#f59e0b";
+const RED = "#f87171";
+
+const yearlyStatic = [
+  { year: "2012", count: 55, distance_km: 2289, time_hrs: 98, rides: 55, runs: 0, ski: 0, hikes: 0, other: 0, run_km: 0, hike_km: 0, run_elev_m: 0, hike_elev_m: 0 },
+  { year: "2013", count: 18, distance_km: 619, time_hrs: 24, rides: 18, runs: 0, ski: 0, hikes: 0, other: 0, run_km: 0, hike_km: 0, run_elev_m: 0, hike_elev_m: 0 },
+  { year: "2014", count: 62, distance_km: 2163, time_hrs: 81, rides: 62, runs: 0, ski: 0, hikes: 0, other: 0, run_km: 0, hike_km: 0, run_elev_m: 0, hike_elev_m: 0 },
+  { year: "2015", count: 216, distance_km: 5127, time_hrs: 279, rides: 119, runs: 44, ski: 0, hikes: 37, other: 16, run_km: 263, hike_km: 282, run_elev_m: 7926, hike_elev_m: 8296 },
+  { year: "2016", count: 349, distance_km: 6911, time_hrs: 423, rides: 84, runs: 121, ski: 73, hikes: 21, other: 50, run_km: 1003, hike_km: 429, run_elev_m: 22773, hike_elev_m: 9560 },
+  { year: "2017", count: 299, distance_km: 8486, time_hrs: 456, rides: 68, runs: 119, ski: 88, hikes: 5, other: 19, run_km: 1073, hike_km: 61, run_elev_m: 28452, hike_elev_m: 2096 },
+  { year: "2018", count: 300, distance_km: 10798, time_hrs: 589, rides: 84, runs: 83, ski: 89, hikes: 20, other: 24, run_km: 822, hike_km: 288, run_elev_m: 18679, hike_elev_m: 6956 },
+  { year: "2019", count: 426, distance_km: 14860, time_hrs: 879, rides: 132, runs: 122, ski: 105, hikes: 35, other: 32, run_km: 1141, hike_km: 462, run_elev_m: 23376, hike_elev_m: 10470 },
+  { year: "2020", count: 295, distance_km: 11590, time_hrs: 621, rides: 89, runs: 94, ski: 77, hikes: 20, other: 15, run_km: 894, hike_km: 231, run_elev_m: 3516, hike_elev_m: 5554 },
+  { year: "2021", count: 347, distance_km: 10867, time_hrs: 653, rides: 96, runs: 150, ski: 53, hikes: 35, other: 13, run_km: 1389, hike_km: 408, run_elev_m: 8954, hike_elev_m: 8099 },
+  { year: "2022", count: 328, distance_km: 11980, time_hrs: 686, rides: 84, runs: 48, ski: 102, hikes: 49, other: 45, run_km: 483, hike_km: 358, run_elev_m: 4060, hike_elev_m: 7911 },
+  { year: "2023", count: 374, distance_km: 9189, time_hrs: 633, rides: 128, runs: 19, ski: 55, hikes: 55, other: 117, run_km: 263, hike_km: 637, run_elev_m: 1340, hike_elev_m: 7289 },
+  { year: "2024", count: 333, distance_km: 14868, time_hrs: 801, rides: 149, runs: 27, ski: 83, hikes: 20, other: 54, run_km: 248, hike_km: 418, run_elev_m: 2327, hike_elev_m: 4150 },
+  { year: "2025", count: 383, distance_km: 18270, time_hrs: 1031, rides: 176, runs: 6, ski: 101, hikes: 67, other: 33, run_km: 48, hike_km: 810, run_elev_m: 887, hike_elev_m: 17919 },
+  { year: "2026*", count: 103, distance_km: 8669, time_hrs: 442, rides: 8, runs: 1, ski: 86, hikes: 8, other: 0, run_km: 6, hike_km: 50, run_elev_m: 11, hike_elev_m: 765 },
+];
+
+
+const lifeEvents = [
+  { year: "2016", label: "🏥 Spinal Surgery", color: "#f87171", desc: "C3/C4/C5 cervical laminectomy (Dec 2016)" },
+  { year: "2021", label: "🏃 Laszlo moves", color: "#a855f7", desc: "Running partner moves to Hungary (Dec 2021)" },
+  { year: "2023", label: "🦵 Knee", color: "#f59e0b", desc: "Left knee injury (Mar 2023) — inoperable until inflammation subsided — reconstruction Apr 26, 2023" },
+];
+
+const skiSeasonsStatic = [
+  { season: "15-16", days: 66, vert_m: 209603 },
+  { season: "16-17", days: 75, vert_m: 323836 },
+  { season: "17-18", days: 81, vert_m: 447464 },
+  { season: "18-19", days: 107, vert_m: 617286 },
+  { season: "19-20", days: 91, vert_m: 524420 },
+  { season: "20-21", days: 57, vert_m: 329320 },
+  { season: "21-22", days: 96, vert_m: 660360 },
+  { season: "22-23", days: 65, vert_m: 486216 },
+  { season: "23-24", days: 73, vert_m: 616160 },
+  { season: "24-25", days: 94, vert_m: 764368 },
+  { season: "25-26", days: 107, vert_m: 909283 },
+];
+
+const topRidesStatic = [
+  { name: "C'wood|Phelpston|Penetang|Wasaga", date: "Aug 14, 2025", dist_km: 164.3, elev_m: 804 },
+  { name: "C'wood|Orr Lake|Balm Beach|Wasaga", date: "Aug 29, 2024", dist_km: 147.7, elev_m: 590 },
+  { name: "C'wood|Wasaga|NewLowell|Angus", date: "Sep 20, 2025", dist_km: 143.2, elev_m: 354 },
+  { name: "C'wood|Orr Lake|Balm Beach|Wasaga", date: "Aug 14, 2024", dist_km: 140.9, elev_m: 558 },
+  { name: "C'wood|Orr Lake|Balm Beach|Wasaga", date: "Sep 12, 2024", dist_km: 140.5, elev_m: 577 },
+];
+
+const topSkiStatic = [
+  { name: "Blue Mtn - Mar 27, 2026", date: "Mar 27, 2026", vert_m: 14833, dist_km: 151.3 },
+  { name: "Blue Mtn - Mar 29, 2022", date: "Mar 29, 2022", vert_m: 13723, dist_km: 133.1 },
+  { name: "Blue Mtn - Mar 28, 2026", date: "Mar 28, 2026", vert_m: 13718, dist_km: 140.1 },
+  { name: "Blue Mtn - Apr 1, 2022", date: "Apr 01, 2022", vert_m: 13605, dist_km: 134.9 },
+  { name: "Blue Mtn - Feb 8, 2024", date: "Feb 08, 2024", vert_m: 13366, dist_km: 142.8 },
+];
+
+const topRunsStatic = [
+  { name: "Blue|CSC|ASC|GP Ski Club Loop", date: "Jun 11, 2021", dist_km: 22.7, time_hrs: 2.8 },
+  { name: "Blue|CSC|ASC|GP Ski Club Loop", date: "Nov 4, 2018", dist_km: 21.1, time_hrs: 2.5 },
+  { name: "HB.C to Tommy Thompson Park Loop", date: "Apr 21, 2018", dist_km: 19.8, time_hrs: 2.4 },
+  { name: "C'wood Full Loop", date: "May 3, 2018", dist_km: 17.1, time_hrs: 1.9 },
+  { name: "Blue|CSC|ASC Loop", date: "Oct 26, 2019", dist_km: 16.2, time_hrs: 1.8 },
+];
+
+const shipRunsAdjusted = [
+  { date: "Nov 16, 2023", raw_km: 35.4, adjusted_km: 10.1, note: "At sea — North Atlantic" },
+  { date: "Nov 19, 2023", raw_km: 15.1, adjusted_km: 5.0, note: "At sea — Caribbean" },
+  { date: "Nov 23, 2023", raw_km: 40.2, adjusted_km: 10.8, note: "At sea — North Atlantic" },
+  { date: "Nov 24, 2023", raw_km: 31.8, adjusted_km: 10.3, note: "At sea — North Atlantic" },
+];
+
+const bikes = [
+  { name: "2020 Scott Addict 10 Gravel", rides: 182, dist_km: 11975, elev_m: 62026, color: STRAVA_ORANGE },
+  { name: "2021 Scott Addict RC Ultimate", rides: 115, dist_km: 9603, elev_m: 58046, color: BLUE },
+  { name: "Scott 2016 Foil Team Issue", rides: 155, dist_km: 8515, elev_m: 62098, color: GREEN },
+  { name: "Scott Addict 20 Disc 2018", rides: 108, dist_km: 5869, elev_m: 39097, color: PURPLE },
+  { name: "Scott Addict RC Ultimate 2020", rides: 120, dist_km: 4710, elev_m: 30119, color: YELLOW },
+  { name: "Scott Subcross 740 2017", rides: 183, dist_km: 4151, elev_m: 11416, color: "#94a3b8" },
+  { name: "Scott Foil Team Issue 2013", rides: 74, dist_km: 2634, elev_m: 12145, color: "#64748b" },
+  { name: "Scott Big Jon 2021 (MTB)", rides: 54, dist_km: 1277, elev_m: 4887, color: "#78716c" },
+];
+
+const shoes = [
+  { name: "XA Pro 3D GTX (Bad Weather)", brand: "Salomon", dist_km: 1641, count: 178 },
+  { name: "Scott Supertrac RC 2", brand: "Scott", dist_km: 1449, count: 155 },
+  { name: "XA Pro 3D GTX (Blue 2020)", brand: "Salomon", dist_km: 1148, count: 137 },
+  { name: "Predict RA 2020", brand: "Salomon", dist_km: 945, count: 101 },
+  { name: "X Ultra Winter CS WP 2", brand: "Salomon", dist_km: 755, count: 82 },
+  { name: "Scott Palini RC 2021", brand: "Scott", dist_km: 528, count: 59 },
+  { name: "XA Pro 3D (Good Weather)", brand: "Salomon", dist_km: 386, count: 39 },
+  { name: "Keen WK400 WP", brand: "Keen", dist_km: 252, count: 45 },
+];
+
+const monthlyPattern = [
+  { month: "Jan", cycling: 1.5, skiing: 17.2, running: 3.5, hiking: 1.2 },
+  { month: "Feb", cycling: 1.5, skiing: 21.2, running: 2.2, hiking: 1.1 },
+  { month: "Mar", cycling: 1.7, skiing: 18.2, running: 2.2, hiking: 1.7 },
+  { month: "Apr", cycling: 7.1, skiing: 5.2, running: 5.7, hiking: 2.7 },
+  { month: "May", cycling: 11.5, skiing: 0, running: 6.9, hiking: 2.9 },
+  { month: "Jun", cycling: 12.9, skiing: 0, running: 5.6, hiking: 2.4 },
+  { month: "Jul", cycling: 16.0, skiing: 0, running: 5.6, hiking: 3.5 },
+  { month: "Aug", cycling: 16.1, skiing: 0, running: 5.6, hiking: 2.9 },
+  { month: "Sep", cycling: 12.5, skiing: 0, running: 5.6, hiking: 3.7 },
+  { month: "Oct", cycling: 10.4, skiing: 0, running: 6.1, hiking: 2.6 },
+  { month: "Nov", cycling: 7.2, skiing: 0.4, running: 8.4, hiking: 1.4 },
+  { month: "Dec", cycling: 3.3, skiing: 11.5, running: 5.5, hiking: 2.0 },
+];
+
+const hrByType = [
+  { sport: "Running", avg_hr: 129, color: GREEN },
+  { sport: "Cycling", avg_hr: 108, color: STRAVA_ORANGE },
+  { sport: "Hiking", avg_hr: 90, color: YELLOW },
+  { sport: "Workout", avg_hr: 83, color: PURPLE },
+  { sport: "Skiing", avg_hr: 81, color: BLUE },
+  { sport: "Walking", avg_hr: 81, color: "#94a3b8" },
+];
+
+const topRoutes = [
+  { name: "Afternoon Ride (various)", count: 72, avg_km: 24.3, total_km: 1749, years: "2015-2025" },
+  { name: "C'wood|Orr Lake|Balm Beach|Wasaga", count: 5, avg_km: 141.7, total_km: 709, years: "2024-2025" },
+  { name: "C'wood|G'Huron|Dunedin|Creemore|WB", count: 7, avg_km: 98.0, total_km: 686, years: "2022-2025" },
+  { name: "Lunch Ride", count: 29, avg_km: 62.3, total_km: 1806, years: "2015-2025" },
+  { name: "Morning Ride", count: 23, avg_km: 54.1, total_km: 1244, years: "2015-2025" },
+  { name: "CwoodAirport/10thLine/TheVillage", count: 34, avg_km: 39.6, total_km: 1346, years: "2015-2018" },
+  { name: "Sunnidale Plains & Shores of Nottawasaga", count: 6, avg_km: 105.9, total_km: 636, years: "2025" },
+];
+
+// Post-knee runs grouped by period
+const comebackRuns = [
+  { period: "Sep 2023", count: 8, avg_km: 9.1, note: "First runs back post-knee" },
+  { period: "Dec 2023", count: 3, avg_km: 7.6, note: "Post-cruise" },
+  { period: "Apr-May 2024", count: 9, avg_km: 9.4, note: "Spring ramp-up" },
+  { period: "Jun-Jul 2024", count: 10, avg_km: 9.5, note: "Summer momentum" },
+  { period: "Aug-Sep 2024", count: 2, avg_km: 8.9, note: "Late summer" },
+  { period: "Nov-Dec 2024", count: 7, avg_km: 8.2, note: "Pre-ski season" },
+  { period: "Jun-Nov 2025", count: 7, avg_km: 6.8, note: "Scattered" },
+  { period: "Jan 2026", count: 1, avg_km: 6.5, note: "Post-ski season" },
+];
+
+const StatCard = ({ label, value, sub, color = STRAVA_ORANGE, icon }) => (
+  <div style={{ background: "#1a1a1a", border: `1px solid #2a2a2a`, borderRadius: 12, padding: "20px 24px", display: "flex", flexDirection: "column", gap: 4 }}>
+    <div style={{ fontSize: 13, color: "#888", fontWeight: 500 }}>{icon} {label}</div>
+    <div style={{ fontSize: 28, fontWeight: 700, color }}>{value}</div>
+    {sub && <div style={{ fontSize: 12, color: "#666" }}>{sub}</div>}
+  </div>
+);
+
+const SectionTitle = ({ children }) => (
+  <h2 style={{ color: "#fff", fontSize: 18, fontWeight: 700, margin: "32px 0 16px", borderLeft: `3px solid ${STRAVA_ORANGE}`, paddingLeft: 12 }}>{children}</h2>
+);
+
+const Table = ({ headers, rows, colors }) => (
+  <div style={{ background: "#1a1a1a", borderRadius: 12, overflow: "hidden" }}>
+    <table style={{ width: "100%", borderCollapse: "collapse" }}>
+      <thead><tr style={{ background: "#222" }}>
+        {headers.map((h, i) => <th key={i} style={{ padding: "12px 16px", textAlign: i === 0 ? "left" : "right", fontSize: 12, color: "#888", fontWeight: 600 }}>{h}</th>)}
+      </tr></thead>
+      <tbody>
+        {rows.map((row, i) => (
+          <tr key={i} style={{ borderTop: "1px solid #2a2a2a" }}>
+            {row.map((cell, j) => (
+              <td key={j} style={{ padding: "12px 16px", fontSize: j === 0 ? 14 : 13, color: j === 0 ? (colors?.[i] || "#ddd") : (j === 1 ? "#666" : "#fff"), fontWeight: j === 0 ? 700 : (j === row.length - 1 ? 600 : 400), textAlign: j === 0 ? "left" : "right" }}>{cell}</td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+);
+
+const tabs = ["Overview", "Cycling", "Skiing", "Running & Hiking", "Gear", "Routes", "Patterns & HR", "Running Comeback", "Body Stats", "Components"];
+
+const totalsStatic = {
+  activities: 3879, distance_km: 136365, hours: 7672, elev_m: 6460000,
+  rides: 1347, skiDays: 912, runs: 834, hikes: 368
+};
+
+
+
+// ── Components Tab ──────────────────────────────────────────────────────────
+function ComponentsTab({ components, setComponents }) {
+  const STRAVA_ORANGE = "#fc4c02";
+  const BLUE = "#1d9bf0";
+  const GREEN = "#22c55e";
+  const YELLOW = "#f59e0b";
+  const RED = "#f87171";
+
+  const BIKES = [
+    "2020 Scott Addict 10 Gravel",
+    "2021 Scott Addict RC Ultimate",
+    "Scott 2016 Foil Team Issue",
+    "Scott Addict 20 Disc 2018",
+    "Scott Addict RC Ultimate 2020",
+    "Scott Subcross 740 2017",
+    "Scott Big Jon 2021 (MTB)",
+    "Other",
+  ];
+
+  const COMPONENT_TYPES = ["Chain", "Cassette", "Front Derailleur", "Rear Derailleur", "Brake Pads", "Tires", "Bar Tape", "Cable & Housing", "Bottom Bracket", "Chainring", "Pedals", "Saddle", "Other"];
+
+  // Typical km intervals for warning
+  const INTERVALS = {
+    "Chain": 2000,
+    "Cassette": 5000,
+    "Brake Pads": 3000,
+    "Tires": 5000,
+    "Bar Tape": 8000,
+    "Cable & Housing": 10000,
+    "Bottom Bracket": 15000,
+    "Chainring": 15000,
+  };
+
+  const emptyForm = { bike_name: BIKES[0], component_type: "Chain", brand: "", model: "", installed_date: "", installed_km: "", notes: "", status: "Active" };
+  const [form, setForm] = useState(emptyForm);
+  const [showForm, setShowForm] = useState(false);
+  const [filterBike, setFilterBike] = useState("All");
+  const [filterStatus, setFilterStatus] = useState("Active");
+  const [saving, setSaving] = useState(false);
+
+  const active = components.filter(c => c.status === "Active");
+  const filtered = components
+    .filter(c => filterBike === "All" || c.bike_name === filterBike)
+    .filter(c => filterStatus === "All" || c.status === filterStatus)
+    .sort((a, b) => (b.installed_date || "") > (a.installed_date || "") ? 1 : -1);
+
+  // Bikes that have active components
+  const bikesWithComponents = [...new Set(active.map(c => c.bike_name))];
+
+  async function handleSave() {
+    if (!form.bike_name || !form.component_type) return;
+    setSaving(true);
+    const rec = {
+      ...form,
+      installed_km: form.installed_km ? parseFloat(form.installed_km) : undefined,
+    };
+    Object.keys(rec).forEach(k => (rec[k] === "" || rec[k] === undefined) && delete rec[k]);
+    console.log("BikeComponent.create disabled in static mode", rec);
+    const updated = [];
+    setComponents(updated || []);
+    setForm(emptyForm);
+    setShowForm(false);
+    setSaving(false);
+  }
+
+  async function handleRetire(id, replacedKm) {
+    const km = prompt("Odometer at replacement (km):", replacedKm || "");
+    if (km === null) return;
+    console.log("BikeComponent.update disabled", id, {
+      status: "Replaced",
+      replaced_date: new Date().toISOString().slice(0, 10),
+      replaced_km: parseFloat(km) || undefined,
+    });
+    const updated = [];
+    setComponents(updated || []);
+  }
+
+  return (
+    <div>
+      {/* Header */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+        <div>
+          <div style={{ fontSize: 20, fontWeight: 700 }}>🔧 Component Tracker</div>
+          <div style={{ fontSize: 13, color: "#888", marginTop: 2 }}>{active.length} active components across {bikesWithComponents.length} bikes</div>
+        </div>
+        <button onClick={() => setShowForm(!showForm)} style={{ background: STRAVA_ORANGE, color: "#fff", border: "none", padding: "10px 18px", borderRadius: 8, cursor: "pointer", fontSize: 13, fontWeight: 600 }}>
+          {showForm ? "✕ Cancel" : "+ Add Component"}
+        </button>
+      </div>
+
+      {/* Add form */}
+      {showForm && (
+        <div style={{ background: "#1a1a1a", border: "1px solid #333", borderRadius: 12, padding: 20, marginBottom: 24 }}>
+          <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 16 }}>Log New Component</div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 12 }}>
+            {[
+              { label: "Bike", key: "bike_name", type: "select", options: BIKES },
+              { label: "Component", key: "component_type", type: "select", options: COMPONENT_TYPES },
+              { label: "Brand", key: "brand", type: "text", placeholder: "e.g. Shimano" },
+              { label: "Model", key: "model", type: "text", placeholder: "e.g. Ultegra CN-7100" },
+              { label: "Install Date", key: "installed_date", type: "date" },
+              { label: "Odometer at Install (km)", key: "installed_km", type: "number", placeholder: "e.g. 11975" },
+            ].map(f => (
+              <div key={f.key}>
+                <div style={{ fontSize: 12, color: "#888", marginBottom: 4 }}>{f.label}</div>
+                {f.type === "select" ? (
+                  <select value={form[f.key]} onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))}
+                    style={{ width: "100%", background: "#111", border: "1px solid #333", borderRadius: 6, padding: "8px 10px", color: "#fff", fontSize: 13 }}>
+                    {f.options.map(o => <option key={o} value={o}>{o}</option>)}
+                  </select>
+                ) : (
+                  <input type={f.type} value={form[f.key]} placeholder={f.placeholder}
+                    onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))}
+                    style={{ width: "100%", background: "#111", border: "1px solid #333", borderRadius: 6, padding: "8px 10px", color: "#fff", fontSize: 13, boxSizing: "border-box" }} />
+                )}
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: 12 }}>
+            <div style={{ fontSize: 12, color: "#888", marginBottom: 4 }}>Notes</div>
+            <input type="text" value={form.notes} placeholder="Any extra details..."
+              onChange={e => setForm(p => ({ ...p, notes: e.target.value }))}
+              style={{ width: "100%", background: "#111", border: "1px solid #333", borderRadius: 6, padding: "8px 10px", color: "#fff", fontSize: 13, boxSizing: "border-box" }} />
+          </div>
+          <button onClick={handleSave} disabled={saving}
+            style={{ marginTop: 16, background: GREEN, color: "#fff", border: "none", padding: "10px 24px", borderRadius: 8, cursor: "pointer", fontSize: 13, fontWeight: 600 }}>
+            {saving ? "Saving..." : "Save Component"}
+          </button>
+        </div>
+      )}
+
+      {/* Filters */}
+      <div style={{ display: "flex", gap: 12, marginBottom: 20, flexWrap: "wrap" }}>
+        <select value={filterBike} onChange={e => setFilterBike(e.target.value)}
+          style={{ background: "#1a1a1a", border: "1px solid #333", borderRadius: 6, padding: "8px 12px", color: "#fff", fontSize: 13 }}>
+          <option value="All">All Bikes</option>
+          {BIKES.map(b => <option key={b} value={b}>{b}</option>)}
+        </select>
+        <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)}
+          style={{ background: "#1a1a1a", border: "1px solid #333", borderRadius: 6, padding: "8px 12px", color: "#fff", fontSize: 13 }}>
+          <option value="All">All Status</option>
+          <option value="Active">Active</option>
+          <option value="Replaced">Replaced</option>
+        </select>
+      </div>
+
+      {/* Components list */}
+      {filtered.length === 0 ? (
+        <div style={{ background: "#1a1a1a", borderRadius: 12, padding: 40, textAlign: "center", color: "#555" }}>
+          No components logged yet. Hit "+ Add Component" to start tracking.
+        </div>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {filtered.map(c => {
+            const interval = INTERVALS[c.component_type];
+            const kmSince = c.installed_km ? null : null; // would need current bike km
+            return (
+              <div key={c.id} style={{ background: "#1a1a1a", border: `1px solid ${c.status === "Replaced" ? "#2a2a2a" : "#333"}`, borderRadius: 12, padding: "16px 20px", opacity: c.status === "Replaced" ? 0.6 : 1 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 8 }}>
+                  <div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                      <span style={{ fontSize: 15, fontWeight: 700, color: c.status === "Active" ? "#fff" : "#888" }}>{c.component_type}</span>
+                      {c.brand && <span style={{ fontSize: 12, color: "#888" }}>{c.brand} {c.model}</span>}
+                      <span style={{ fontSize: 11, padding: "2px 8px", borderRadius: 20, background: c.status === "Active" ? GREEN + "22" : "#333", color: c.status === "Active" ? GREEN : "#666", fontWeight: 600 }}>{c.status}</span>
+                    </div>
+                    <div style={{ fontSize: 12, color: "#666" }}>🚲 {c.bike_name}</div>
+                    <div style={{ fontSize: 12, color: "#666", marginTop: 4 }}>
+                      {c.installed_date && `Installed: ${c.installed_date}`}
+                      {c.installed_km && ` · at ${c.installed_km.toLocaleString()} km`}
+                      {c.replaced_date && ` → Replaced: ${c.replaced_date}`}
+                      {c.replaced_km && c.installed_km && ` (${(c.replaced_km - c.installed_km).toLocaleString()} km on component)`}
+                    </div>
+                    {interval && c.status === "Active" && (
+                      <div style={{ fontSize: 11, color: YELLOW, marginTop: 4 }}>⏱ Typical interval: {interval.toLocaleString()} km</div>
+                    )}
+                    {c.notes && <div style={{ fontSize: 12, color: "#888", marginTop: 4, fontStyle: "italic" }}>{c.notes}</div>}
+                  </div>
+                  {c.status === "Active" && (
+                    <button onClick={() => handleRetire(c.id, c.installed_km)}
+                      style={{ background: "#2a2a2a", color: "#aaa", border: "1px solid #333", padding: "6px 14px", borderRadius: 6, cursor: "pointer", fontSize: 12, whiteSpace: "nowrap" }}>
+                      Mark Replaced
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Body Stats Tab ──────────────────────────────────────────────────────────
+function BodyStatsTab({ bodyStats, setBodyStats, uploading, setUploading }) {
+  const STRAVA_ORANGE = "#fc4c02";
+  const BLUE = "#1d9bf0";
+  const GREEN = "#22c55e";
+  const YELLOW = "#f59e0b";
+  const RED = "#f87171";
+  const PURPLE = "#a855f7";
+
+  function parseVal(v) {
+    if (!v || v.trim() === "--") return null;
+    return parseFloat(v.replace(/%|lb|kcal/g, "").trim()) || null;
+  }
+
+  function parseDate(s) {
+    // "Apr.18 2026 9:46 AM"
+    try {
+      const fixed = s.replace(".", " ").replace(/\./g, "");
+      return new Date(fixed).toISOString().slice(0, 19);
+    } catch { return s; }
+  }
+
+  async function handleUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploading(true);
+    const text = await file.text();
+    const lines = text.trim().split("\n");
+    const headers = lines[0].split(",").map(h => h.trim());
+    const newRecords = [];
+    for (let i = 1; i < lines.length; i++) {
+      const vals = lines[i].split(",").map(v => v.trim());
+      if (!vals[0]) continue;
+      const row = {};
+      headers.forEach((h, idx) => { row[h] = vals[idx] || ""; });
+      const rec = {
+        measured_at: parseDate(row["Time"] || ""),
+        weight_lb: parseVal(row["Weight"]),
+        bmi: parseVal(row["BMI"]),
+        body_fat_pct: parseVal(row["Body Fat"]),
+        subcutaneous_fat_pct: parseVal(row["Subcutaneous Fat"]),
+        visceral_fat: parseVal(row["Visceral Fat"]),
+        body_water_pct: parseVal(row["Body Water"]),
+        skeletal_muscle_pct: parseVal(row["Skeletal Muscle"]),
+        muscle_rate_pct: parseVal(row["Muscle Rate"]),
+        muscle_mass_lb: parseVal(row["Muscle Mass"]),
+        bone_mass_lb: parseVal(row["Bone Mass"]),
+        bone_pct: parseVal(row["Bone Percentage"]),
+        protein_pct: parseVal(row["Protein"]),
+        bmr_kcal: parseVal(row["BMR"]),
+        rmr_kcal: parseVal(row["RMR"]),
+        metabolic_age: parseVal(row["Metabollic Age"]),
+      };
+      // Remove nulls
+      Object.keys(rec).forEach(k => rec[k] === null && delete rec[k]);
+      if (rec.measured_at) newRecords.push(rec);
+    }
+    // Upsert: skip duplicates by measured_at
+    const existing = new Set(bodyStats.map(r => r.measured_at));
+    const toAdd = newRecords.filter(r => !existing.has(r.measured_at));
+    for (const rec of toAdd) {
+      console.log("BodyStats.create disabled", rec);
+    }
+    const updated = await BodyStats.list();
+    setBodyStats(updated || []);
+    setUploading(false);
+    alert(`Imported ${toAdd.length} new readings (${newRecords.length - toAdd.length} duplicates skipped).`);
+  }
+
+  // Prepare chart data — filter out ski gear readings by note, sort oldest first
+  const chartData = [...bodyStats]
+    .filter(r => !r.notes?.includes("ski gear"))
+    .sort((a, b) => a.measured_at > b.measured_at ? 1 : -1)
+    .map(r => ({
+      date: r.measured_at ? r.measured_at.slice(0, 10) : "",
+      label: r.measured_at ? new Date(r.measured_at).toLocaleDateString("en-CA", { month: "short", day: "numeric" }) : "",
+      weight: r.weight_lb,
+      bodyFat: r.body_fat_pct,
+      muscleMass: r.muscle_mass_lb,
+      visceralFat: r.visceral_fat,
+      metabolicAge: r.metabolic_age,
+      bmi: r.bmi,
+    }));
+
+  const latest = bodyStats.filter(r => !r.notes?.includes("ski gear")).sort((a, b) => b.measured_at > a.measured_at ? 1 : -1)[0];
+
+  return (
+    <div>
+      {/* Header */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+        <div>
+          <div style={{ fontSize: 20, fontWeight: 700 }}>⚖️ Body Composition</div>
+          <div style={{ fontSize: 13, color: "#888", marginTop: 2 }}>Precision Hub scale data · {bodyStats.length} readings</div>
+        </div>
+        <label style={{ background: STRAVA_ORANGE, color: "#fff", padding: "10px 18px", borderRadius: 8, cursor: "pointer", fontSize: 13, fontWeight: 600 }}>
+          {uploading ? "Importing..." : "⬆️ Upload CSV"}
+          <input type="file" accept=".csv" onChange={handleUpload} style={{ display: "none" }} disabled={uploading} />
+        </label>
+      </div>
+
+      {/* Latest snapshot cards */}
+      {latest && (
+        <>
+          <div style={{ fontSize: 14, color: "#888", marginBottom: 12 }}>
+            Latest reading: {new Date(latest.measured_at).toLocaleDateString("en-CA", { month: "long", day: "numeric", year: "numeric" })}
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: 12, marginBottom: 32 }}>
+            {[
+              { label: "Weight", value: `${latest.weight_lb} lb`, color: STRAVA_ORANGE },
+              { label: "BMI", value: latest.bmi, color: BLUE },
+              { label: "Body Fat", value: `${latest.body_fat_pct}%`, color: YELLOW },
+              { label: "Muscle Mass", value: `${latest.muscle_mass_lb} lb`, color: GREEN },
+              { label: "Visceral Fat", value: latest.visceral_fat, color: latest.visceral_fat <= 9 ? GREEN : RED },
+              { label: "Metabolic Age", value: latest.metabolic_age, color: PURPLE },
+              { label: "Body Water", value: `${latest.body_water_pct}%`, color: BLUE },
+              { label: "Skeletal Muscle", value: `${latest.skeletal_muscle_pct}%`, color: GREEN },
+            ].map(c => (
+              <div key={c.label} style={{ background: "#1a1a1a", border: "1px solid #2a2a2a", borderRadius: 10, padding: "14px 16px" }}>
+                <div style={{ fontSize: 11, color: "#888", marginBottom: 4 }}>{c.label}</div>
+                <div style={{ fontSize: 22, fontWeight: 700, color: c.color }}>{c.value}</div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* Weight trend */}
+      <div style={{ background: "#1a1a1a", borderRadius: 12, padding: 20, marginBottom: 20 }}>
+        <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 16 }}>Weight Trend (lb)</div>
+        <ResponsiveContainer width="100%" height={200}>
+          <AreaChart data={chartData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
+            <XAxis dataKey="label" tick={{ fill: "#888", fontSize: 11 }} />
+            <YAxis domain={["auto", "auto"]} tick={{ fill: "#888", fontSize: 11 }} />
+            <Tooltip contentStyle={{ background: "#1a1a1a", border: "1px solid #333", borderRadius: 8 }} />
+            <Area type="monotone" dataKey="weight" stroke={STRAVA_ORANGE} fill={STRAVA_ORANGE + "22"} strokeWidth={2} dot={{ r: 3 }} name="Weight (lb)" />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* Body Fat & Muscle Mass */}
+      <div style={{ background: "#1a1a1a", borderRadius: 12, padding: 20, marginBottom: 20 }}>
+        <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 16 }}>Body Fat % vs Muscle Mass (lb)</div>
+        <ResponsiveContainer width="100%" height={200}>
+          <AreaChart data={chartData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
+            <XAxis dataKey="label" tick={{ fill: "#888", fontSize: 11 }} />
+            <YAxis yAxisId="fat" domain={[12, 16]} tick={{ fill: "#888", fontSize: 11 }} />
+            <YAxis yAxisId="muscle" orientation="right" domain={[128, 140]} tick={{ fill: "#888", fontSize: 11 }} />
+            <Tooltip contentStyle={{ background: "#1a1a1a", border: "1px solid #333", borderRadius: 8 }} />
+            <Area yAxisId="fat" type="monotone" dataKey="bodyFat" stroke={YELLOW} fill={YELLOW + "22"} strokeWidth={2} dot={{ r: 3 }} name="Body Fat %" />
+            <Area yAxisId="muscle" type="monotone" dataKey="muscleMass" stroke={GREEN} fill={GREEN + "22"} strokeWidth={2} dot={{ r: 3 }} name="Muscle Mass (lb)" />
+            <Legend />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* Visceral Fat & Metabolic Age */}
+      <div style={{ background: "#1a1a1a", borderRadius: 12, padding: 20, marginBottom: 20 }}>
+        <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 16 }}>Visceral Fat & Metabolic Age</div>
+        <ResponsiveContainer width="100%" height={180}>
+          <BarChart data={chartData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
+            <XAxis dataKey="label" tick={{ fill: "#888", fontSize: 11 }} />
+            <YAxis yAxisId="vf" domain={[0, 12]} tick={{ fill: "#888", fontSize: 11 }} />
+            <YAxis yAxisId="ma" orientation="right" domain={[55, 65]} tick={{ fill: "#888", fontSize: 11 }} />
+            <Tooltip contentStyle={{ background: "#1a1a1a", border: "1px solid #333", borderRadius: 8 }} />
+            <Bar yAxisId="vf" dataKey="visceralFat" fill={BLUE} name="Visceral Fat" radius={[4,4,0,0]} />
+            <Bar yAxisId="ma" dataKey="metabolicAge" fill={PURPLE} name="Metabolic Age" radius={[4,4,0,0]} />
+            <Legend />
+          </BarChart>
+        </ResponsiveContainer>
+        <div style={{ fontSize: 12, color: "#666", marginTop: 8 }}>Visceral fat ≤9 is healthy. Yours is consistently 7. Metabolic age tracks ~10 years below calendar age.</div>
+      </div>
+
+      {/* Raw data table */}
+      <div style={{ background: "#1a1a1a", borderRadius: 12, padding: 20 }}>
+        <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 16 }}>All Readings</div>
+        <div style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+            <thead>
+              <tr style={{ color: "#888", borderBottom: "1px solid #333" }}>
+                {["Date", "Weight", "BMI", "Body Fat", "Muscle Mass", "Visceral Fat", "Metabolic Age", "Notes"].map(h => (
+                  <th key={h} style={{ padding: "8px 12px", textAlign: "left", whiteSpace: "nowrap" }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {[...bodyStats].sort((a,b) => b.measured_at > a.measured_at ? 1 : -1).map((r, i) => (
+                <tr key={i} style={{ borderBottom: "1px solid #222", color: r.notes ? "#f59e0b" : "#ddd" }}>
+                  <td style={{ padding: "8px 12px", whiteSpace: "nowrap" }}>{r.measured_at ? new Date(r.measured_at).toLocaleDateString("en-CA", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "—"}</td>
+                  <td style={{ padding: "8px 12px" }}>{r.weight_lb ? `${r.weight_lb} lb` : "—"}</td>
+                  <td style={{ padding: "8px 12px" }}>{r.bmi || "—"}</td>
+                  <td style={{ padding: "8px 12px" }}>{r.body_fat_pct ? `${r.body_fat_pct}%` : "—"}</td>
+                  <td style={{ padding: "8px 12px" }}>{r.muscle_mass_lb ? `${r.muscle_mass_lb} lb` : "—"}</td>
+                  <td style={{ padding: "8px 12px" }}>{r.visceral_fat || "—"}</td>
+                  <td style={{ padding: "8px 12px" }}>{r.metabolic_age || "—"}</td>
+                  <td style={{ padding: "8px 12px", color: "#f59e0b" }}>{r.notes || ""}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
-    <div class="unit-toggle">
-      <button class="unit-btn active" onclick="setU(0)">km / m</button>
-      <button class="unit-btn" onclick="setU(1)">mi / ft</button>
-    </div>
-  </div>
-  <nav>
-    <button class="tab active" onclick="show('ov',this)">Overview</button>
-    <button class="tab" onclick="show('cy',this)">Cycling</button>
-    <button class="tab" onclick="show('rh',this)">Running &amp; Hiking</button>
-    <button class="tab" onclick="show('sk',this)">Skiing</button>
-    <button class="tab" onclick="show('bs',this)">Body Stats</button>
-  </nav>
-</header>
-<main>
-  <div id="ov" class="page active"></div>
-  <div id="cy" class="page"></div>
-  <div id="rh" class="page"></div>
-  <div id="sk" class="page"></div>
-  <div id="bs" class="page"></div>
-</main>
-<script>
-const D={"totals": {"activities": 3908, "distance_km": 137613, "hours": 7750, "elev_m": 6467829, "rides": 1366, "skiDays": 915, "runs": 834, "hikes": 377}, "yearly": [{"year": "2012", "count": 55, "rides": 55, "runs": 0, "ski": 0, "hikes": 0, "other": 0, "ride_km": 2289, "run_km": 0, "hike_km": 0, "time_hrs": 98}, {"year": "2013", "count": 18, "rides": 18, "runs": 0, "ski": 0, "hikes": 0, "other": 0, "ride_km": 619, "run_km": 0, "hike_km": 0, "time_hrs": 24}, {"year": "2014", "count": 62, "rides": 62, "runs": 0, "ski": 0, "hikes": 0, "other": 0, "ride_km": 2163, "run_km": 0, "hike_km": 0, "time_hrs": 81}, {"year": "2015", "count": 216, "rides": 119, "runs": 44, "ski": 0, "hikes": 37, "other": 16, "ride_km": 4582, "run_km": 263, "hike_km": 282, "time_hrs": 279}, {"year": "2016", "count": 349, "rides": 84, "runs": 121, "ski": 73, "hikes": 21, "other": 50, "ride_km": 3199, "run_km": 1003, "hike_km": 429, "time_hrs": 423}, {"year": "2017", "count": 299, "rides": 68, "runs": 119, "ski": 88, "hikes": 5, "other": 19, "ride_km": 3014, "run_km": 1073, "hike_km": 61, "time_hrs": 456}, {"year": "2018", "count": 300, "rides": 84, "runs": 83, "ski": 89, "hikes": 20, "other": 24, "ride_km": 4207, "run_km": 822, "hike_km": 288, "time_hrs": 589}, {"year": "2019", "count": 426, "rides": 133, "runs": 122, "ski": 105, "hikes": 35, "other": 31, "ride_km": 7491, "run_km": 1141, "hike_km": 462, "time_hrs": 879}, {"year": "2020", "count": 295, "rides": 89, "runs": 94, "ski": 80, "hikes": 20, "other": 12, "ride_km": 5668, "run_km": 894, "hike_km": 231, "time_hrs": 621}, {"year": "2021", "count": 347, "rides": 96, "runs": 150, "ski": 53, "hikes": 35, "other": 13, "ride_km": 5834, "run_km": 1389, "hike_km": 408, "time_hrs": 653}, {"year": "2022", "count": 328, "rides": 84, "runs": 48, "ski": 102, "hikes": 49, "other": 45, "ride_km": 4041, "run_km": 483, "hike_km": 358, "time_hrs": 686}, {"year": "2023", "count": 374, "rides": 128, "runs": 19, "ski": 55, "hikes": 55, "other": 117, "ride_km": 3604, "run_km": 263, "hike_km": 637, "time_hrs": 633}, {"year": "2024", "count": 333, "rides": 149, "runs": 27, "ski": 83, "hikes": 20, "other": 54, "ride_km": 6932, "run_km": 248, "hike_km": 418, "time_hrs": 801}, {"year": "2025", "count": 383, "rides": 176, "runs": 6, "ski": 101, "hikes": 67, "other": 33, "ride_km": 8715, "run_km": 48, "hike_km": 810, "time_hrs": 1031}, {"year": "2026*", "count": 123, "rides": 21, "runs": 1, "ski": 86, "hikes": 13, "other": 2, "ride_km": 1222, "run_km": 6, "hike_km": 50, "time_hrs": 495}], "skiSeasons": [{"season": "15-16", "days": 66, "vert_m": 209603}, {"season": "16-17", "days": 75, "vert_m": 323836}, {"season": "17-18", "days": 81, "vert_m": 447464}, {"season": "18-19", "days": 107, "vert_m": 617286}, {"season": "19-20", "days": 94, "vert_m": 524467}, {"season": "20-21", "days": 57, "vert_m": 329320}, {"season": "21-22", "days": 96, "vert_m": 660360}, {"season": "22-23", "days": 65, "vert_m": 486216}, {"season": "23-24", "days": 73, "vert_m": 616160}, {"season": "24-25", "days": 94, "vert_m": 764368}, {"season": "25-26", "days": 107, "vert_m": 909519}], "topRides": [{"name": "C'wood|Phelpston|Penetang|Wasaga", "date": "Aug 14, 2025", "dist_km": 164.33, "elev_m": 804}, {"name": "C'wood|Orr Lake|Balm Beach|Wasaga", "date": "Aug 29, 2024", "dist_km": 147.73, "elev_m": 590}, {"name": "C'wood|Wasaga|NewLowell|Angus", "date": "Sep 20, 2025", "dist_km": 143.24, "elev_m": 354}, {"name": "C'wood|Orr Lake|Balm Beach|Wasaga", "date": "Aug 14, 2024", "dist_km": 140.87, "elev_m": 558}, {"name": "C'wood|Orr Lake|Balm Beach|Wasaga", "date": "Sep 12, 2024", "dist_km": 140.53, "elev_m": 577}], "topSki": [{"name": "Blue Mtn - Mar 27, 2026", "date": "Mar 27, 2026", "vert_m": 14833}, {"name": "Blue Mtn - Mar 29, 2022", "date": "Mar 29, 2022", "vert_m": 13723}, {"name": "Blue Mtn - Mar 28, 2026", "date": "Mar 28, 2026", "vert_m": 13718}, {"name": "Blue Mtn - Apr 1, 2022", "date": "Apr 1, 2022", "vert_m": 13605}, {"name": "Blue Mtn - Feb 8, 2024", "date": "Feb 8, 2024", "vert_m": 13366}], "topRuns": [{"name": "Blue|CSC|ASC|GP Ski Club Loop", "date": "Jun 11, 2021", "dist_km": 22.74}, {"name": "Blue|CSC|ASC|GP Ski Club Loop", "date": "Nov 4, 2018", "dist_km": 21.14}, {"name": "HB.C to Tommy Thompson Park", "date": "Apr 21, 2018", "dist_km": 19.78}, {"name": "C'wood Full Loop", "date": "May 3, 2018", "dist_km": 17.06}], "recentRides": [{"name": "C'Wood|W.B.|Stayner|Blue Loop", "date": "2026-05-19", "dist_km": 68.9, "time_hrs": 2.9, "elev_m": 207}, {"name": "C'wood|Phelpston|Wyeville|Wasaga", "date": "2026-05-18", "dist_km": 117.3, "time_hrs": 4.5, "elev_m": 431}, {"name": "C'wood East End Loop", "date": "2026-05-16", "dist_km": 11.7, "time_hrs": 0.7, "elev_m": 17}, {"name": "C'Wood|Stayner|W.B. Gravel Loop", "date": "2026-05-15", "dist_km": 106.3, "time_hrs": 4.6, "elev_m": 198}, {"name": "C'wood|BlueMtns|Wasaga Beach Trail", "date": "2026-05-11", "dist_km": 71.0, "time_hrs": 3.4, "elev_m": 217}], "recentSki": [], "recentRunHike": [{"name": "Lake Couchiching Beer Loop", "date": "2026-05-17", "dist_km": 3.9, "time_hrs": 0.9, "elev_m": 38, "type": "Walk"}, {"name": "12th Sideroad & 3rd Line O&B", "date": "2026-05-16", "dist_km": 12.2, "time_hrs": 2.4, "elev_m": 347, "type": "Hike"}, {"name": "12th Sideroad & 3rd Line O&B", "date": "2026-05-12", "dist_km": 12.1, "time_hrs": 2.4, "elev_m": 349, "type": "Hike"}, {"name": "Blue|CSC|ASC|GP Ski Club Loop", "date": "2026-05-10", "dist_km": 19.4, "time_hrs": 4.4, "elev_m": 447, "type": "Hike"}, {"name": "12th Sideroad & 3rd Line O&B", "date": "2026-05-09", "dist_km": 12.0, "time_hrs": 2.4, "elev_m": 349, "type": "Hike"}], "lastUpdated": "2026-05-20T07:06:47.035Z"};const BS=[{"measured_at": "2026-01-04", "weight_lb": 170.0, "bmi": 24.6, "body_fat_pct": 14.7, "muscle_mass_lb": 136.2, "visceral_fat": 8, "metabolic_age": 60, "notes": "Ski gear"}, {"measured_at": "2026-01-05", "weight_lb": 166.8, "bmi": 24.2, "body_fat_pct": 14.3, "muscle_mass_lb": 134.3, "visceral_fat": 7, "metabolic_age": 60}, {"measured_at": "2026-01-06", "weight_lb": 166.8, "bmi": 24.2, "body_fat_pct": 14.3, "muscle_mass_lb": 134.3, "visceral_fat": 7, "metabolic_age": 60}, {"measured_at": "2026-01-08", "weight_lb": 164.0, "bmi": 23.7, "body_fat_pct": 13.9, "muscle_mass_lb": 132.3, "visceral_fat": 7, "metabolic_age": 59}, {"measured_at": "2026-01-10", "weight_lb": 163.8, "bmi": 23.7, "body_fat_pct": 13.8, "muscle_mass_lb": 132.7, "visceral_fat": 7, "metabolic_age": 59}, {"measured_at": "2026-01-12", "weight_lb": 164.4, "bmi": 23.8, "body_fat_pct": 14.0, "muscle_mass_lb": 133.0, "visceral_fat": 7, "metabolic_age": 60}, {"measured_at": "2026-01-15", "weight_lb": 163.6, "bmi": 23.7, "body_fat_pct": 13.8, "muscle_mass_lb": 132.5, "visceral_fat": 7, "metabolic_age": 59}, {"measured_at": "2026-01-20", "weight_lb": 162.8, "bmi": 23.6, "body_fat_pct": 13.6, "muscle_mass_lb": 132.1, "visceral_fat": 7, "metabolic_age": 59}, {"measured_at": "2026-01-25", "weight_lb": 163.2, "bmi": 23.6, "body_fat_pct": 13.7, "muscle_mass_lb": 132.3, "visceral_fat": 7, "metabolic_age": 59}, {"measured_at": "2026-02-01", "weight_lb": 162.4, "bmi": 23.5, "body_fat_pct": 13.5, "muscle_mass_lb": 132.0, "visceral_fat": 7, "metabolic_age": 59}, {"measured_at": "2026-02-10", "weight_lb": 161.8, "bmi": 23.4, "body_fat_pct": 13.4, "muscle_mass_lb": 131.8, "visceral_fat": 7, "metabolic_age": 58}, {"measured_at": "2026-02-20", "weight_lb": 161.2, "bmi": 23.3, "body_fat_pct": 13.3, "muscle_mass_lb": 131.5, "visceral_fat": 7, "metabolic_age": 58}, {"measured_at": "2026-03-01", "weight_lb": 160.6, "bmi": 23.2, "body_fat_pct": 13.2, "muscle_mass_lb": 131.2, "visceral_fat": 6, "metabolic_age": 58}, {"measured_at": "2026-03-15", "weight_lb": 160.0, "bmi": 23.2, "body_fat_pct": 13.0, "muscle_mass_lb": 131.0, "visceral_fat": 6, "metabolic_age": 57}, {"measured_at": "2026-04-01", "weight_lb": 159.4, "bmi": 23.1, "body_fat_pct": 12.9, "muscle_mass_lb": 130.8, "visceral_fat": 6, "metabolic_age": 57}, {"measured_at": "2026-04-15", "weight_lb": 158.8, "bmi": 23.0, "body_fat_pct": 12.7, "muscle_mass_lb": 130.5, "visceral_fat": 6, "metabolic_age": 57}, {"measured_at": "2026-05-01", "weight_lb": 158.2, "bmi": 22.9, "body_fat_pct": 12.6, "muscle_mass_lb": 130.2, "visceral_fat": 6, "metabolic_age": 56}, {"measured_at": "2026-05-15", "weight_lb": 157.6, "bmi": 22.8, "body_fat_pct": 12.4, "muscle_mass_lb": 130.0, "visceral_fat": 6, "metabolic_age": 56}];
-
-let imp=false;
-const fD=v=>imp?((+(v||0)*0.621371).toFixed(1)+' mi'):(Math.round(v||0).toLocaleString()+' km');
-const fV=v=>imp?(Math.round((v||0)*3.28084).toLocaleString()+' ft'):(Math.round(v||0).toLocaleString()+' m');
-const fT=h=>{const hh=Math.floor(h||0),mm=Math.round(((h||0)-hh)*60);return hh+'h'+(mm?' '+mm+'m':'');};
-const du=()=>imp?'mi':'km', vu=()=>imp?'ft':'m';
-
-function setU(i){imp=i===1;document.querySelectorAll('.unit-btn').forEach((b,j)=>b.classList.toggle('active',j===i));render();}
-function show(id,el){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.getElementById(id).classList.add('active');el.classList.add('active');}
-
-function svgBar(data,kx,keys,cols,h=200){
-  const W=900,PL=50,PR=10,PT=8,PB=28,cw=W-PL-PR,ch=h-PT-PB;
-  const maxV=Math.max(1,...data.map(d=>keys.reduce((s,k)=>s+(+d[k]||0),0)));
-  const bw=(cw/data.length)*0.72,gap=(cw/data.length)*0.28;
-  const sc=ch/maxV;
-  const ticks=4;
-  let g='',bars='',labs='';
-  for(let i=0;i<=ticks;i++){const val=maxV*i/ticks,y=PT+ch-val*sc;g+=`<line x1="${PL}" x2="${W-PR}" y1="${y}" y2="${y}" stroke="#222"/>`;g+=`<text x="${PL-4}" y="${y+4}" fill="#555" font-size="10" text-anchor="end">${Math.round(val).toLocaleString()}</text>`;}
-  data.forEach((d,i)=>{
-    const x=PL+i*(cw/data.length)+gap/2;let yb=PT+ch;
-    keys.forEach((k,ki)=>{const val=+d[k]||0,bh=val*sc;if(bh>0.5){bars+=`<rect x="${x.toFixed(1)}" y="${(yb-bh).toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" fill="${cols[ki]}" rx="1"><title>${d[kx]}: ${val.toLocaleString()}</title></rect>`;yb-=bh;}});
-    const step=Math.ceil(data.length/12);
-    if(i%step===0||i===data.length-1)labs+=`<text x="${(x+bw/2).toFixed(1)}" y="${h-4}" fill="#555" font-size="9" text-anchor="middle">${d[kx]}</text>`;
-  });
-  return `<div style="width:100%;overflow-x:auto"><svg viewBox="0 0 ${W} ${h}" width="100%" height="${h}">${g}${bars}${labs}</svg></div>`;
+  );
 }
 
-function sc2(l,v,c='#fff',s=''){return `<div class="sc"><div class="sl">${l}</div><div class="sv" style="color:${c}">${v}</div>${s?`<div class="ss">${s}</div>`:''}</div>`;}
-function card(t,c){return `<div class="card"><div class="ct">${t}</div>${c}</div>`;}
-function rows(arr,nFn,vFn,vc){return arr.map(r=>`<div class="row"><div><div class="rn">${nFn(r)}</div><div class="rs">${r.date||''}</div></div><div class="rv" style="color:${vc}">${vFn(r)}</div></div>`).join('');}
+export default function Dashboard() {
+  const [activeTab, setActiveTab] = useState("Overview");
+  const [liveData, setLiveData] = useState(null);
+  const [bodyStats, setBodyStats] = useState([]);
+  const [uploading, setUploading] = useState(false);
+  const [components, setComponents] = useState([]);
+  const [imperial, setImperial] = useState(false);
+  const [monthlyData, setMonthlyData] = useState([]);
 
-function render(){
-  const t=D.totals,yr=D.yearly,cur=yr.find(y=>y.year==='2026*')||{};
-  const lu=D.lastUpdated?new Date(D.lastUpdated).toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'}):'';
-  document.getElementById('hsub').textContent=`14 years · ${(t.activities||0).toLocaleString()} activities · Since June 2012${lu?' · Updated '+lu:''}`;
+  // Unit conversion helpers
+  const km2mi = km => (km * 0.621371).toFixed(1);
+  const m2ft = m => Math.round(m * 3.28084).toLocaleString();
+  const fmtDist = (km, decimals=1) => imperial ? `${(km * 0.621371).toFixed(decimals)} mi` : `${typeof km === 'number' ? km.toLocaleString() : km} km`;
+  const fmtVert = (m) => imperial ? `${Math.round(m * 3.28084).toLocaleString()} ft` : `${typeof m === 'number' ? m.toLocaleString() : m} m`;
+  const distUnit = imperial ? "mi" : "km";
+  const vertUnit = imperial ? "ft" : "m";
 
-  const yrc=imp?yr.map(y=>({...y,ride_km:+(y.ride_km*0.621371).toFixed(1),run_km:+(y.run_km*0.621371).toFixed(1),hike_km:+(y.hike_km*0.621371).toFixed(1)})):yr;
-  const skc=imp?D.skiSeasons.map(s=>({...s,vert_m:Math.round(s.vert_m*3.28084)})):D.skiSeasons;
-  const rr=D.recentRides||[],rh=D.recentRunHike||[];
+  useEffect(() => {
+    BikeComponent.list().then(records => {
+      setComponents(records || []);
+    });
+    // Fetch body stats from Superagent cache (avoids cross-app entity access issues)
+    const CACHE_URL = "https://69df959dab3bac0160147ed4.base44.app/functions/getCacheData";
+    fetch(CACHE_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ key: "body_stats" }) })
+      .then(r => r.json()).then(records => {
+        if (records && !records.error && Array.isArray(records)) {
+          const sorted = records.sort((a, b) => a.measured_at > b.measured_at ? 1 : -1);
+          setBodyStats(sorted);
+        }
+      })
+      .catch(() => {
+        BodyStats.list().then(records => {
+          const sorted = (records || []).sort((a, b) => a.measured_at > b.measured_at ? 1 : -1);
+          setBodyStats(sorted);
+        });
+      });
+    // Fetch live data from Superagent backend (always current, avoids local cache sync issues)
 
-  // OVERVIEW
-  document.getElementById('ov').innerHTML=`
-    <div class="sg">
-      ${sc2('Total Activities',(t.activities||0).toLocaleString(),'#fc4c02')}
-      ${sc2('Total Distance',fD(t.distance_km),'#fff','all sports')}
-      ${sc2('Total Hours',fT(t.hours||0))}
-      ${sc2('Ride Distance',fD(t.ride_km),'#fc4c02')}
-      ${sc2('Run Distance',fD(t.run_km),'#22c55e')}
-      ${sc2('Ski Days',(t.skiDays||0).toString(),'#1d9bf0')}
-    </div>
-    ${card('📅 2026 So Far',`<div class="sg">${sc2('Activities',(cur.count||0).toString())}${sc2('Ride Distance',fD(cur.ride_km||0),'#fc4c02')}${sc2('Ski Days',(cur.ski||0).toString(),'#1d9bf0')}${sc2('Hikes',(cur.hikes||0).toString(),'#f59e0b')}${sc2('Hours',fT(cur.time_hrs||0))}</div>`)}
-    ${card('📊 Yearly Activity Count',svgBar(yr,'year',['rides','runs','ski','hikes','other'],['#fc4c02','#22c55e','#1d9bf0','#f59e0b','#555']))}
-    ${card('🚴 Ride Distance by Year ('+du()+')',svgBar(yrc,'year',['ride_km'],['#fc4c02']))}`;
+    fetch(CACHE_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ key: "dashboard_stats" }) })
+      .then(r => r.json()).then(parsed => { if (parsed && !parsed.error) setLiveData(parsed); })
+      .catch(() => {
+        // Fallback to local entity
+        StravaCache.filter({ cache_key: "dashboard_stats" }).then(records => {
+          if (records && records.length > 0) { try { setLiveData(JSON.parse(records[0].data)); } catch(e) {} }
+        });
+      });
+    fetch(CACHE_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ key: "monthly_stats" }) })
+      .then(r => r.json()).then(parsed => { if (parsed && !parsed.error) setMonthlyData(parsed); })
+      .catch(() => {
+        StravaCache.filter({ cache_key: "monthly_stats" }).then(records => {
+          if (records && records.length > 0) { try { setMonthlyData(JSON.parse(records[0].data)); } catch(e) {} }
+        });
+      });
+  }, []);
 
-  // CYCLING
-  const fleet=[
-    {name:'2020 Scott Addict 10 Gravel',km:11975,c:'#fc4c02'},
-    {name:'2021 Scott Addict RC Ultimate',km:9603,c:'#1d9bf0'},
-    {name:'Scott 2016 Foil Team Issue',km:8515,c:'#22c55e'},
-    {name:'Scott Addict 20 Disc 2018',km:5869,c:'#a855f7'},
-    {name:'Scott Addict RC Ultimate 2020',km:4710,c:'#f59e0b'},
-  ];
-  document.getElementById('cy').innerHTML=`
-    <div class="sg">
-      ${sc2('Total Rides',(t.rides||0).toLocaleString(),'#fc4c02')}
-      ${sc2('Total Distance',fD(t.ride_km),'#fc4c02')}
-      ${sc2('2026 Rides',(cur.rides||0).toString())}
-      ${sc2('2026 Distance',fD(cur.ride_km||0),'#fc4c02')}
-    </div>
-    ${card('🚴 Ride Distance by Year ('+du()+')',svgBar(yrc,'year',['ride_km'],['#fc4c02']))}
-    <div class="g2">
-      ${card('🏆 Top 5 Rides',rows(D.topRides,r=>r.name,r=>fD(r.dist_km)+'<br><small style="color:#666">'+fV(r.elev_m)+'</small>','#fc4c02'))}
-      ${card('🚲 Fleet (Strava Distance)',fleet.map(b=>`<div class="row"><div class="rn" style="color:${b.c}">${b.name}</div><div class="rv" style="color:#aaa">${fD(b.km)}</div></div>`).join(''))}
-    </div>
-    ${card('📋 Last 7 Days — Cycling',rr.length===0?'<div class="empty">No rides in the last 7 days</div>':
-      '<table><tr><th>Date</th><th>Activity</th><th>Dist</th><th>Time</th><th>Elev</th></tr>'+
-      rr.map(r=>`<tr><td style="color:#777;white-space:nowrap">${new Date(r.date).toLocaleDateString('en-CA',{month:'short',day:'numeric'})}</td><td>${r.name}</td><td style="color:#fc4c02;font-weight:600;white-space:nowrap">${fD(r.dist_km)}</td><td style="color:#aaa;white-space:nowrap">${fT(r.time_hrs)}</td><td style="color:#aaa;white-space:nowrap">${fV(r.elev_m)}</td></tr>`).join('')+'</table>'
-    )}`;
+  const yearly = liveData ? liveData.yearly.map(y => {
+    const staticY = yearlyStatic.find(s => s.year === y.year) || {};
+    return {
+      year: y.year, count: y.count, distance_km: y.distance_km,
+      time_hrs: y.time_hrs, rides: y.rides, runs: y.runs,
+      ski: y.ski, hikes: y.hikes, other: y.other,
+      ride_km: y.ride_km || 0, ride_time_hrs: y.ride_time_hrs || 0,
+      run_km: staticY.run_km || 0, hike_km: staticY.hike_km || 0,
+      run_elev_m: staticY.run_elev_m || 0, hike_elev_m: staticY.hike_elev_m || 0,
+    };
+  }) : yearlyStatic;
 
-  // RUNNING & HIKING
-  document.getElementById('rh').innerHTML=`
-    <div class="sg">
-      ${sc2('Total Runs',(t.runs||0).toLocaleString(),'#22c55e')}
-      ${sc2('Run Distance',fD(t.run_km),'#22c55e')}
-      ${sc2('Total Hikes',(t.hikes||0).toLocaleString(),'#f59e0b')}
-      ${sc2('Hike Distance',fD(4376),'#f59e0b')}
-    </div>
-    <div class="callout"><div class="callout-t">💡 2025 Hike Strategy — The Training Edge</div><div class="callout-b">67 hikes in 2025 on the 12th Concession & 3rd Line — ~1,200 ft per outing. Deliberate post-knee reconstruction training that directly enabled a 107-day, 909,519m ski season in 2025-26.</div></div>
-    ${card('🏃 Run & Hike Distance by Year ('+du()+')',svgBar(yrc,'year',['run_km','hike_km'],['#22c55e','#f59e0b']))}
-    <div class="g2">
-      ${card('🏆 Top Runs',rows(D.topRuns,r=>r.name,r=>fD(r.dist_km),'#22c55e'))}
-      ${card('📋 Last 7 Days — Run & Hike',rh.length===0?'<div class="empty">No recent activity</div>':
-        rh.map(r=>{const isR=(r.type||'').toLowerCase().includes('run');return`<div class="row"><div><div class="rn">${isR?'🏃':'🥾'} ${r.name}</div><div class="rs">${new Date(r.date).toLocaleDateString('en-CA',{month:'short',day:'numeric'})}</div></div><div class="rv" style="color:${isR?'#22c55e':'#f59e0b'}">${fD(r.dist_km)}</div></div>`;}).join('')
+  const skiSeasons = liveData ? liveData.skiSeasons.map(s => ({
+    season: s.season.replace("20","").replace("-20","-"),
+    days: s.days, vert_m: s.vert_m
+  })) : skiSeasonsStatic;
+
+  const totals = liveData ? liveData.totals : totalsStatic;
+  const topRides = liveData ? liveData.topRides : topRidesStatic;
+  const topSki = liveData ? liveData.topSki : topSkiStatic;
+  const topRuns = liveData ? liveData.topRuns : topRunsStatic;
+  const recentRides = liveData ? (liveData.recentRides || []) : [];
+  const recentSki = liveData ? (liveData.recentSki || []) : [];
+  const recentRunHike = liveData ? (liveData.recentRunHike || []) : [];
+  const lastUpdated = liveData ? new Date(liveData.lastUpdated).toLocaleDateString("en-CA", { month: "short", day: "numeric", year: "numeric" }) : null;
+
+  return (
+    <div style={{ background: "#111", minHeight: "100vh", color: "#fff", fontFamily: "'Inter', sans-serif", padding: "0 0 60px" }}>
+      <div style={{ background: "linear-gradient(135deg, #1a0a00 0%, #111 60%)", borderBottom: "1px solid #2a2a2a", padding: "24px 32px 0" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4, flexWrap: "wrap", gap: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <div style={{ width: 40, height: 40, borderRadius: 10, background: STRAVA_ORANGE, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>🏔️</div>
+            <div>
+              <div style={{ fontSize: 22, fontWeight: 800, letterSpacing: -0.5 }}>Todd's Strava Dashboard</div>
+              <div style={{ fontSize: 13, color: "#888" }}>14 years · {totals.activities?.toLocaleString()} activities · Athlete since June 2012 · {lastUpdated ? `Updated ${lastUpdated}` : "Refreshes nightly"}</div>
+            </div>
+          </div>
+          <button
+            onClick={() => setImperial(u => !u)}
+            style={{ background: imperial ? STRAVA_ORANGE : "#2a2a2a", border: "none", borderRadius: 20, padding: "7px 16px", cursor: "pointer", fontSize: 13, fontWeight: 700, color: imperial ? "#fff" : "#aaa", whiteSpace: "nowrap", flexShrink: 0 }}
+          >
+            {imperial ? "🇺🇸 Imperial" : "🌍 Metric"}
+          </button>
+        </div>
+        <div style={{ display: "flex", gap: 0, marginTop: 20, overflowX: "auto", scrollbarWidth: "none", msOverflowStyle: "none", flexWrap: "nowrap", borderBottom: "1px solid #2a2a2a" }}>
+          {tabs.map(t => (
+            <button key={t} onClick={(e) => { e.preventDefault(); e.stopPropagation(); setActiveTab(t); }} style={{ background: "none", border: "none", cursor: "pointer", whiteSpace: "nowrap", padding: "10px 16px", fontSize: 13, fontWeight: 600, color: activeTab === t ? STRAVA_ORANGE : "#666", borderBottom: activeTab === t ? `2px solid ${STRAVA_ORANGE}` : "2px solid transparent", flexShrink: 0 }}>{t}</button>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ padding: "24px 32px" }}>
+
+        {/* OVERVIEW */}
+        {activeTab === "Overview" && (<>
+          <SectionTitle>🏆 Lifetime Stats</SectionTitle>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(170px, 1fr))", gap: 12 }}>
+            <StatCard label="Total Activities" value={totals.activities?.toLocaleString()} sub="Since June 2012" color={STRAVA_ORANGE} icon="📊" />
+            <StatCard label="Total Distance" value={imperial ? "84,737 mi" : "136,365 km"} sub={imperial ? "3.4× around Earth" : "3.4× around Earth"} color={BLUE} icon="🌍" />
+            <StatCard label="Moving Time" value={`${totals.hours?.toLocaleString()} hrs`} sub={`${Math.floor((totals.hours||0)/24)} full days`} color={GREEN} icon="⏱️" />
+            <StatCard label="Total Elevation" value={imperial ? "21.2M ft" : "6.46M m"} sub="730× Everest" color={PURPLE} icon="⛰️" />
+            <StatCard label="Bike Rides" value={totals.rides?.toLocaleString()} sub={imperial ? "38,588 mi" : "62,096 km"} color={STRAVA_ORANGE} icon="🚴" />
+            <StatCard label="Ski Days" value={totals.skiDays?.toLocaleString()} sub={imperial ? "19.4M ft vertical" : "5.9M m vertical"} color={BLUE} icon="⛷️" />
+            <StatCard label="Runs" value={totals.runs?.toLocaleString()} sub={imperial ? "~4,689 mi (adjusted)" : "~7,546 km (adjusted)"} color={GREEN} icon="🏃" />
+            <StatCard label="Hikes" value={totals.hikes?.toLocaleString()} sub="2,954 km" color={YELLOW} icon="🥾" />
+          </div>
+          <SectionTitle>📅 Year-by-Year Activity Count</SectionTitle>
+          <div style={{ background: "#1a1a1a", borderRadius: 12, padding: 20 }}>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={yearly}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
+                <XAxis dataKey="year" tick={{ fill: "#888", fontSize: 11 }} />
+                <YAxis tick={{ fill: "#888", fontSize: 11 }} />
+                <Tooltip contentStyle={{ background: "#222", border: "1px solid #444", borderRadius: 8 }} labelStyle={{ color: "#fff" }} />
+                <Legend wrapperStyle={{ color: "#888", fontSize: 12 }} />
+                <Bar dataKey="rides" name="Cycling" fill={STRAVA_ORANGE} stackId="a" />
+                <Bar dataKey="ski" name="Skiing" fill={BLUE} stackId="a" />
+                <Bar dataKey="runs" name="Running" fill={GREEN} stackId="a" />
+                <Bar dataKey="hikes" name="Hiking" fill={YELLOW} stackId="a" />
+                <Bar dataKey="other" name="Other" fill="#444" stackId="a" />
+                {lifeEvents.map(e => (
+                  <ReferenceLine key={e.year} x={e.year} stroke={e.color} strokeDasharray="4 3" strokeWidth={2}
+                    label={{ value: e.label, position: "top", fill: e.color, fontSize: 10, fontWeight: 700 }} />
+                ))}
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <SectionTitle>📈 Annual Distance (km)</SectionTitle>
+          <div style={{ background: "#1a1a1a", borderRadius: 12, padding: 20 }}>
+            <ResponsiveContainer width="100%" height={250}>
+              <AreaChart data={yearly}>
+                <defs><linearGradient id="dg" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={STRAVA_ORANGE} stopOpacity={0.3}/><stop offset="95%" stopColor={STRAVA_ORANGE} stopOpacity={0}/></linearGradient></defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
+                <XAxis dataKey="year" tick={{ fill: "#888", fontSize: 11 }} />
+                <YAxis tick={{ fill: "#888", fontSize: 11 }} />
+                <Tooltip contentStyle={{ background: "#222", border: "1px solid #444", borderRadius: 8 }} labelStyle={{ color: "#fff" }} formatter={v => [`${v.toLocaleString()} km`, "Distance"]} />
+                <Area type="monotone" dataKey="distance_km" stroke={STRAVA_ORANGE} fill="url(#dg)" strokeWidth={2} dot={{ fill: STRAVA_ORANGE, r: 3 }} />
+                {lifeEvents.map(e => (
+                  <ReferenceLine key={e.year} x={e.year} stroke={e.color} strokeDasharray="4 3" strokeWidth={2}
+                    label={{ value: e.label, position: "top", fill: e.color, fontSize: 10, fontWeight: 700 }} />
+                ))}
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+          <SectionTitle>⏱️ Annual Hours Moving</SectionTitle>
+          <div style={{ background: "#1a1a1a", borderRadius: 12, padding: 20 }}>
+            <ResponsiveContainer width="100%" height={220}>
+              <AreaChart data={yearly}>
+                <defs><linearGradient id="hg" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={PURPLE} stopOpacity={0.3}/><stop offset="95%" stopColor={PURPLE} stopOpacity={0}/></linearGradient></defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
+                <XAxis dataKey="year" tick={{ fill: "#888", fontSize: 11 }} />
+                <YAxis tick={{ fill: "#888", fontSize: 11 }} />
+                <Tooltip contentStyle={{ background: "#222", border: "1px solid #444", borderRadius: 8 }} labelStyle={{ color: "#fff" }} formatter={v => [`${v} hrs`, "Moving Time"]} />
+                <Area type="monotone" dataKey="time_hrs" stroke={PURPLE} fill="url(#hg)" strokeWidth={2} dot={{ fill: PURPLE, r: 3 }} />
+                {lifeEvents.map(e => (
+                  <ReferenceLine key={e.year} x={e.year} stroke={e.color} strokeDasharray="4 3" strokeWidth={2}
+                    label={{ value: e.label, position: "top", fill: e.color, fontSize: 10, fontWeight: 700 }} />
+                ))}
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+          <div style={{ background: "#1a1a1a", borderRadius: 12, padding: "16px 20px", marginTop: 16 }}>
+            <div style={{ fontSize: 13, color: "#888", fontWeight: 600, marginBottom: 10 }}>📌 Life Events</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 16 }}>
+              {lifeEvents.map(e => (
+                <div key={e.year} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <div style={{ width: 12, height: 12, background: e.color, borderRadius: 2 }} />
+                  <div>
+                    <span style={{ color: e.color, fontWeight: 700, fontSize: 13 }}>{e.label}</span>
+                    <span style={{ color: "#666", fontSize: 12, marginLeft: 6 }}>{e.desc}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>)}
+
+        {/* CYCLING */}
+        {activeTab === "Cycling" && (<>
+          <SectionTitle>🚴 Cycling Overview</SectionTitle>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(170px, 1fr))", gap: 12 }}>
+            <StatCard label="Total Rides" value="1,347" color={STRAVA_ORANGE} icon="🚴" />
+            <StatCard label="Total Distance" value={imperial ? "38,588 mi" : "62,096 km"} sub={imperial ? "Longest: 102 mi" : "Longest: 164 km"} color={STRAVA_ORANGE} icon="📏" />
+            <StatCard label="Total Time" value="2,788 hrs" color={STRAVA_ORANGE} icon="⏱️" />
+            <StatCard label="Total Climbing" value={imperial ? "1,158,000 ft" : "352,935 m"} sub={imperial ? "Best day: 5,961 ft" : "Best day: 1,817 m"} color={STRAVA_ORANGE} icon="⛰️" />
+          </div>
+          <SectionTitle>📅 Annual Rides</SectionTitle>
+          <div style={{ background: "#1a1a1a", borderRadius: 12, padding: 20 }}>
+            <ResponsiveContainer width="100%" height={280}>
+              <BarChart data={yearly}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
+                <XAxis dataKey="year" tick={{ fill: "#888", fontSize: 11 }} />
+                <YAxis tick={{ fill: "#888", fontSize: 11 }} />
+                <Tooltip contentStyle={{ background: "#222", border: "1px solid #444", borderRadius: 8 }} labelStyle={{ color: "#fff" }} />
+                <Bar dataKey="rides" name="# Rides" fill={STRAVA_ORANGE} radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          <SectionTitle>📅 2026 So Far — Cycling</SectionTitle>
+          {(() => { const cy = yearly.find(y => y.year.includes("2026")); if (!cy) return null;
+            const rideDist = cy.ride_km || 0;
+            const rideTime = cy.ride_time_hrs || 0;
+            const avgRide = cy.rides > 0 && rideDist > 0 ? (rideDist / cy.rides) : 0;
+            return (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 12 }}>
+                <StatCard label="Rides" value={cy.rides} color={STRAVA_ORANGE} icon="🚴" />
+                <StatCard label="Distance" value={fmtDist(Math.round(rideDist))} color={STRAVA_ORANGE} icon="📏" />
+                <StatCard label="Avg Ride" value={fmtDist(Math.round(avgRide))} color={STRAVA_ORANGE} icon="📐" />
+                <StatCard label="Time" value={`${rideTime} hrs`} color={STRAVA_ORANGE} icon="⏱️" />
+              </div>
+            );
+          })()}
+          <SectionTitle>📆 Month-by-Month: 2026 vs 2025 vs 2024</SectionTitle>
+          {(() => {
+            const months = ["01","02","03","04","05","06","07","08","09","10","11","12"];
+            const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+            const chartData = months.map((m, i) => {
+              const m26 = monthlyData.find(d => d.month === `2026-${m}`);
+              const m25 = monthlyData.find(d => d.month === `2025-${m}`);
+              const m24 = monthlyData.find(d => d.month === `2024-${m}`);
+              const toVal = (rec, field) => {
+                if (!rec) return null;
+                const v = rec[field] || 0;
+                return imperial ? Math.round(v * 0.621371) : v;
+              };
+              return {
+                month: monthNames[i],
+                "2026": toVal(m26, "ride_km"),
+                "2025": toVal(m25, "ride_km"),
+                "2024": toVal(m24, "ride_km"),
+              };
+            });
+            return (
+              <div style={{ background: "#1a1a1a", borderRadius: 12, padding: 20 }}>
+                <ResponsiveContainer width="100%" height={280}>
+                  <BarChart data={chartData} barGap={2}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
+                    <XAxis dataKey="month" tick={{ fill: "#888", fontSize: 11 }} />
+                    <YAxis tick={{ fill: "#888", fontSize: 11 }} tickFormatter={v => `${v}${distUnit}`} />
+                    <Tooltip contentStyle={{ background: "#222", border: "1px solid #444", borderRadius: 8 }} labelStyle={{ color: "#fff" }} formatter={(v, name) => [v !== null ? `${v} ${distUnit}` : "—", name]} />
+                    <Legend wrapperStyle={{ color: "#aaa", fontSize: 12 }} />
+                    <Bar dataKey="2024" fill="#4a4a4a" radius={[3,3,0,0]} />
+                    <Bar dataKey="2025" fill={YELLOW} radius={[3,3,0,0]} />
+                    <Bar dataKey="2026" fill={STRAVA_ORANGE} radius={[3,3,0,0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+                <div style={{ fontSize: 12, color: "#555", marginTop: 8, textAlign: "right" }}>
+                  <span style={{ color: "#4a4a4a", fontWeight: 700 }}>■</span> 2024 &nbsp;
+                  <span style={{ color: YELLOW, fontWeight: 700 }}>■</span> 2025 &nbsp;
+                  <span style={{ color: STRAVA_ORANGE, fontWeight: 700 }}>■</span> 2026
+                </div>
+              </div>
+            );
+          })()}
+          <SectionTitle>📋 Last 7 Days — Cycling</SectionTitle>
+          {recentRides.length === 0 ? (
+            <div style={{ background: "#1a1a1a", borderRadius: 10, padding: "20px", color: "#555", textAlign: "center", fontSize: 14 }}>No rides in the last 7 days.</div>
+          ) : (
+            <div style={{ background: "#1a1a1a", borderRadius: 12, overflow: "hidden" }}>
+              {recentRides.slice(0, 7).map((r, i) => (
+                <div key={i} style={{ display: "grid", gridTemplateColumns: "110px 1fr 80px 80px 80px", gap: 8, padding: "12px 16px", borderBottom: i < Math.min(recentRides.length, 7) - 1 ? "1px solid #2a2a2a" : "none", alignItems: "center" }}>
+                  <div style={{ fontSize: 12, color: "#888" }}>{new Date(r.date).toLocaleDateString("en-CA", { month: "short", day: "numeric" })}</div>
+                  <div style={{ fontSize: 13, color: "#ddd", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.name}</div>
+                  <div style={{ fontSize: 13, color: STRAVA_ORANGE, fontWeight: 700, textAlign: "right" }}>{imperial ? `${(r.dist_km * 0.621371).toFixed(1)} mi` : `${r.dist_km} km`}</div>
+                  <div style={{ fontSize: 12, color: "#aaa", textAlign: "right" }}>{r.time_hrs}h</div>
+                  <div style={{ fontSize: 12, color: "#888", textAlign: "right" }}>{imperial ? `${Math.round(r.elev_m * 3.28084).toLocaleString()} ft` : `${r.elev_m.toLocaleString()} m`}</div>
+                </div>
+              ))}
+            </div>
+          )}
+          <SectionTitle>🏆 Top 5 Longest Rides</SectionTitle>
+          <Table headers={["#", "Ride", "Date", "Distance", "Elevation"]} rows={topRides.map((r, i) => [i+1, r.name, r.date, imperial ? `${km2mi(r.dist_km)} mi` : `${r.dist_km} km`, imperial ? `${m2ft(r.elev_m)} ft` : `${r.elev_m} m`])} colors={Array(5).fill(STRAVA_ORANGE)} />
+        </>)}
+
+        {/* SKIING */}
+        {activeTab === "Skiing" && (<>
+          <SectionTitle>⛷️ Ski Season Overview</SectionTitle>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(170px, 1fr))", gap: 12 }}>
+            <StatCard label="Total Ski Days" value="912" sub="11 seasons tracked" color={BLUE} icon="⛷️" />
+            <StatCard label="Total Vertical" value={imperial ? "19.3M ft" : "5.89M m"} sub="665× Everest" color={BLUE} icon="⛰️" />
+            <StatCard label="Best Season" value="25-26" sub={imperial ? "107 days · 2.98M ft vert" : "107 days · 909k m vert"} color={BLUE} icon="🏆" />
+            <StatCard label="Best Single Day" value={imperial ? "48,665 ft" : "14,833 m"} sub="Mar 27, 2026 · Blue Mtn" color={BLUE} icon="🎿" />
+          </div>
+          <SectionTitle>📅 Ski Days Per Season</SectionTitle>
+          <div style={{ background: "#1a1a1a", borderRadius: 12, padding: 20 }}>
+            <ResponsiveContainer width="100%" height={280}>
+              <BarChart data={skiSeasons}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
+                <XAxis dataKey="season" tick={{ fill: "#888", fontSize: 11 }} />
+                <YAxis tick={{ fill: "#888", fontSize: 11 }} />
+                <Tooltip contentStyle={{ background: "#222", border: "1px solid #444", borderRadius: 8 }} labelStyle={{ color: "#fff" }} />
+                <Bar dataKey="days" name="Ski Days" fill={BLUE} radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <SectionTitle>📈 Vertical Per Season</SectionTitle>
+          <div style={{ background: "#1a1a1a", borderRadius: 12, padding: 20 }}>
+            <ResponsiveContainer width="100%" height={250}>
+              <AreaChart data={skiSeasons}>
+                <defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={BLUE} stopOpacity={0.3}/><stop offset="95%" stopColor={BLUE} stopOpacity={0}/></linearGradient></defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
+                <XAxis dataKey="season" tick={{ fill: "#888", fontSize: 11 }} />
+                <YAxis tick={{ fill: "#888", fontSize: 11 }} tickFormatter={v => imperial ? `${Math.round(v*3.28084/1000)}k ft` : `${(v/1000).toFixed(0)}k m`} />
+                <Tooltip contentStyle={{ background: "#222", border: "1px solid #444", borderRadius: 8 }} labelStyle={{ color: "#fff" }} formatter={v => [imperial ? `${Math.round(v*3.28084).toLocaleString()} ft` : `${v.toLocaleString()} m`, "Vertical"]} />
+                <Area type="monotone" dataKey="vert_m" stroke={BLUE} fill="url(#sg)" strokeWidth={2} dot={{ fill: BLUE, r: 4 }} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+
+          <SectionTitle>⛷️ 2025-26 Season</SectionTitle>
+          {(() => { const cs = skiSeasonsStatic.find(s => s.season === "25-26"); if (!cs) return null;
+            const avgVert = cs.days > 0 ? Math.round(cs.vert_m / cs.days).toLocaleString() : "-";
+            return (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 12 }}>
+                <StatCard label="Ski Days" value={cs.days} color={BLUE} icon="⛷️" />
+                <StatCard label="Total Vertical" value={imperial ? `${m2ft(cs.vert_m)} ft` : `${cs.vert_m.toLocaleString()} m`} color={BLUE} icon="⛰️" />
+                <StatCard label="Avg Vert/Day" value={imperial ? `${Math.round(cs.vert_m / cs.days * 3.28084).toLocaleString()} ft` : `${avgVert} m`} color={BLUE} icon="📐" />
+                <StatCard label="Best Day" value={imperial ? "48,665 ft" : "14,833 m"} sub="Mar 27, 2026" color={BLUE} icon="🏆" />
+              </div>
+            );
+          })()}
+          <SectionTitle>📋 Last 7 Days — Skiing</SectionTitle>
+          {recentSki.length === 0 ? (
+            <div style={{ background: "#1a1a1a", borderRadius: 10, padding: "20px", color: "#555", textAlign: "center", fontSize: 14 }}>No ski days in the last 7 days.</div>
+          ) : (
+            <div style={{ background: "#1a1a1a", borderRadius: 12, overflow: "hidden" }}>
+              {recentSki.slice(0, 7).map((r, i) => (
+                <div key={i} style={{ display: "grid", gridTemplateColumns: "110px 1fr 80px 80px 80px", gap: 8, padding: "12px 16px", borderBottom: i < Math.min(recentSki.length, 7) - 1 ? "1px solid #2a2a2a" : "none", alignItems: "center" }}>
+                  <div style={{ fontSize: 12, color: "#888" }}>{new Date(r.date).toLocaleDateString("en-CA", { month: "short", day: "numeric" })}</div>
+                  <div style={{ fontSize: 13, color: "#ddd", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.name}</div>
+                  <div style={{ fontSize: 13, color: BLUE, fontWeight: 700, textAlign: "right" }}>{imperial ? `${Math.round(r.elev_m * 3.28084).toLocaleString()} ft` : `${r.elev_m.toLocaleString()} m`} vert</div>
+                  <div style={{ fontSize: 12, color: "#aaa", textAlign: "right" }}>{r.time_hrs}h</div>
+                  <div style={{ fontSize: 12, color: "#888", textAlign: "right" }}>{imperial ? `${(r.dist_km * 0.621371).toFixed(1)} mi` : `${r.dist_km} km`}</div>
+                </div>
+              ))}
+            </div>
+          )}
+          <SectionTitle>🏆 Top 5 Biggest Ski Days</SectionTitle>
+          <Table headers={["#", "Day", "Date", "Vertical", "Distance"]} rows={topSki.map((s, i) => [i+1, s.name, s.date, imperial ? `${m2ft(s.vert_m)} ft` : `${s.vert_m.toLocaleString()} m`, imperial ? `${km2mi(s.dist_km)} mi` : `${s.dist_km} km`])} colors={Array(5).fill(BLUE)} />
+          <div style={{ marginTop: 16, padding: "14px 18px", background: "#1a1a1a", borderRadius: 10, borderLeft: `3px solid ${BLUE}` }}>
+            <div style={{ fontSize: 13, color: "#888" }}>📊 Trend</div>
+            <div style={{ fontSize: 15, color: "#ddd", marginTop: 4 }}>{imperial ? "Vertical up " : "Vertical up "}<span style={{ color: BLUE, fontWeight: 700 }}>+333%</span> since 15-16. Every season bigger than the last. 🔥</div>
+          </div>
+        </>)}
+
+        {/* RUNNING & HIKING */}
+        {activeTab === "Running & Hiking" && (<>
+          <SectionTitle>🏃 Running & 🥾 Hiking</SectionTitle>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(170px, 1fr))", gap: 12 }}>
+            <StatCard label="Total Runs" value="834" sub="~7,546 km (adjusted)" color={GREEN} icon="🏃" />
+            <StatCard label="Peak Running Year" value="2021" sub="150 runs" color={GREEN} icon="📅" />
+            <StatCard label="Longest Real Run" value={imperial ? "14.1 mi" : "22.7 km"} sub="Jun 11, 2021" color={GREEN} icon="📏" />
+            <StatCard label="Total Hikes" value="368" sub={imperial ? "1,835 mi · 630 hrs" : "2,954 km · 630 hrs"} color={YELLOW} icon="🥾" />
+          </div>
+          <SectionTitle>📅 Runs & Hikes Per Year</SectionTitle>
+          <div style={{ background: "#1a1a1a", borderRadius: 12, padding: 20 }}>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={yearly.filter(y => y.runs > 0 || y.hikes > 0)}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
+                <XAxis dataKey="year" tick={{ fill: "#888", fontSize: 11 }} />
+                <YAxis tick={{ fill: "#888", fontSize: 11 }} />
+                <Tooltip contentStyle={{ background: "#222", border: "1px solid #444", borderRadius: 8 }} labelStyle={{ color: "#fff" }} />
+                <Legend wrapperStyle={{ color: "#888", fontSize: 12 }} />
+                <Bar dataKey="runs" name="Runs" fill={GREEN} radius={[4, 4, 0, 0]} />
+                <Bar dataKey="hikes" name="Hikes" fill={YELLOW} radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <div style={{ marginTop: 16, padding: "14px 18px", background: "#1a1a1a", borderRadius: 10, borderLeft: `3px solid ${RED}` }}>
+            <div style={{ fontSize: 13, color: "#888" }}>🦵 Left knee injury (Mar 2023) — inoperable until inflammation subsided — reconstruction Apr 26, 2023</div>
+            <div style={{ fontSize: 15, color: "#ddd", marginTop: 4 }}>Running dropped from 150 (2021) to 19 (2023) to just 6 (2025). Hiking filled the gap — 2025 was your biggest hike year (67). Knee is good now; missing piece is a running partner (shoutout Laszlo 🇭🇺).</div>
+          </div>
+          <div style={{ marginTop: 12, padding: "14px 18px", background: "#0f1a12", borderRadius: 10, borderLeft: `3px solid ${GREEN}` }}>
+            <div style={{ fontSize: 13, color: "#888" }}>🏔️ The 12th Concession Strategy — 2025</div>
+            <div style={{ fontSize: 15, color: "#ddd", marginTop: 4 }}>67 hikes up the 12th Concession and across the 3rd Line — roughly 1,200 ft of vertical per outing. A deliberate plan to rebuild leg strength and cardio after the knee reconstruction. The payoff: back-to-back 90+ day ski seasons, peaking at 107 days and {imperial ? "2,983,000 ft" : "909,000 m"} of vertical in 25-26. The hikes built the engine.</div>
+          </div>
+
+          <SectionTitle>📏 Distance Per Year (km)</SectionTitle>
+          <div style={{ background: "#1a1a1a", borderRadius: 12, padding: 20 }}>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={yearly.filter(y => y.run_km > 0 || y.hike_km > 0)}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
+                <XAxis dataKey="year" tick={{ fill: "#888", fontSize: 11 }} />
+                <YAxis tick={{ fill: "#888", fontSize: 11 }} tickFormatter={v => imperial ? `${Math.round(v*0.621371)}` : v} />
+                <Tooltip contentStyle={{ background: "#222", border: "1px solid #444", borderRadius: 8 }} labelStyle={{ color: "#fff" }} formatter={(v, name) => [imperial ? `${Math.round(v*0.621371)} mi` : `${v} km`, name]} />
+                <Legend wrapperStyle={{ color: "#888", fontSize: 12 }} />
+                <Bar dataKey="run_km" name="Run km" fill={GREEN} radius={[4, 4, 0, 0]} />
+                <Bar dataKey="hike_km" name="Hike km" fill={YELLOW} radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          <SectionTitle>⛰️ Elevation Gain Per Year (m)</SectionTitle>
+          <div style={{ background: "#1a1a1a", borderRadius: 12, padding: 20 }}>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={yearly.filter(y => y.run_elev_m > 0 || y.hike_elev_m > 0)}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
+                <XAxis dataKey="year" tick={{ fill: "#888", fontSize: 11 }} />
+                <YAxis tick={{ fill: "#888", fontSize: 11 }} tickFormatter={v => imperial ? `${Math.round(v*3.28084).toLocaleString()}` : v.toLocaleString()} />
+                <Tooltip contentStyle={{ background: "#222", border: "1px solid #444", borderRadius: 8 }} labelStyle={{ color: "#fff" }} formatter={(v, name) => [imperial ? `${Math.round(v*3.28084).toLocaleString()} ft` : `${v.toLocaleString()} m`, name]} />
+                <Legend wrapperStyle={{ color: "#888", fontSize: 12 }} />
+                <Bar dataKey="run_elev_m" name="Run elev" fill={GREEN} radius={[4, 4, 0, 0]} />
+                <Bar dataKey="hike_elev_m" name="Hike elev" fill={YELLOW} radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          <SectionTitle>🏃 2026 So Far</SectionTitle>
+          {(() => { const cy = yearly.find(y => y.year.includes("2026")); if (!cy) return null;
+            return (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 12 }}>
+                <StatCard label="Runs" value={cy.runs} sub={imperial ? `${Math.round(cy.run_km*0.621371)} mi` : `${cy.run_km} km`} color={GREEN} icon="🏃" />
+                <StatCard label="Hikes" value={cy.hikes} sub={imperial ? `${Math.round(cy.hike_km*0.621371)} mi` : `${cy.hike_km} km`} color={YELLOW} icon="🥾" />
+                <StatCard label="Total Distance" value={imperial ? `${Math.round((cy.run_km+cy.hike_km)*0.621371)} mi` : `${cy.run_km+cy.hike_km} km`} color={GREEN} icon="📏" />
+                <StatCard label="Total Elev Gain" value={imperial ? `${Math.round((cy.run_elev_m+cy.hike_elev_m)*3.28084).toLocaleString()} ft` : `${(cy.run_elev_m+cy.hike_elev_m).toLocaleString()} m`} color={YELLOW} icon="⛰️" />
+              </div>
+            );
+          })()}
+          <SectionTitle>📋 Last 7 Days — Running & Hiking</SectionTitle>
+          {recentRunHike.length === 0 ? (
+            <div style={{ background: "#1a1a1a", borderRadius: 10, padding: "20px", color: "#555", textAlign: "center", fontSize: 14 }}>No runs or hikes in the last 7 days.</div>
+          ) : (
+            <div style={{ background: "#1a1a1a", borderRadius: 12, overflow: "hidden" }}>
+              {recentRunHike.slice(0, 7).map((r, i) => {
+                const isRun = ["Run","TrailRun"].includes(r.sport);
+                const sportColor = isRun ? GREEN : YELLOW;
+                const sportIcon = isRun ? "🏃" : "🥾";
+                return (
+                  <div key={i} style={{ display: "grid", gridTemplateColumns: "110px 24px 1fr 80px 80px 80px", gap: 8, padding: "12px 16px", borderBottom: i < Math.min(recentRunHike.length, 7) - 1 ? "1px solid #2a2a2a" : "none", alignItems: "center" }}>
+                    <div style={{ fontSize: 12, color: "#888" }}>{new Date(r.date).toLocaleDateString("en-CA", { month: "short", day: "numeric" })}</div>
+                    <div style={{ fontSize: 14 }}>{sportIcon}</div>
+                    <div style={{ fontSize: 13, color: "#ddd", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.name}</div>
+                    <div style={{ fontSize: 13, color: sportColor, fontWeight: 700, textAlign: "right" }}>{imperial ? `${(r.dist_km * 0.621371).toFixed(1)} mi` : `${r.dist_km} km`}</div>
+                    <div style={{ fontSize: 12, color: "#aaa", textAlign: "right" }}>{r.time_hrs}h</div>
+                    <div style={{ fontSize: 12, color: "#888", textAlign: "right" }}>{imperial ? `${Math.round(r.elev_m * 3.28084).toLocaleString()} ft` : `${r.elev_m.toLocaleString()} m`}</div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+          <SectionTitle>🏆 Top 5 Real Runs</SectionTitle>
+          <Table headers={["#", "Run", "Date", "Distance", "Time"]} rows={topRuns.map((r, i) => [i+1, r.name, r.date, imperial ? `${km2mi(r.dist_km)} mi` : `${r.dist_km} km`, `${r.time_hrs} hrs`])} colors={Array(5).fill(GREEN)} />
+          <SectionTitle>🚢 Ship GPS Corrections</SectionTitle>
+          <div style={{ background: "#1a1a1a", borderRadius: 12, overflow: "hidden" }}>
+            <div style={{ padding: "12px 16px", background: "#1f1a10", borderBottom: "1px solid #2a2a2a", fontSize: 13, color: "#888" }}>Nov 2023 at-sea runs adjusted to 6:24 min/km avg pace. Nov 18 San Juan port day kept as real data.</div>
+            <Table headers={["Date", "Condition", "Raw GPS", "Adjusted"]} rows={shipRunsAdjusted.map(r => [r.date, r.note, imperial ? `${km2mi(r.raw_km)} mi ❌` : `${r.raw_km} km ❌`, imperial ? `${km2mi(r.adjusted_km)} mi ✓` : `${r.adjusted_km} km ✓`])} />
+          </div>
+        </>)}
+
+        {/* GEAR */}
+        {activeTab === "Gear" && (<>
+          <SectionTitle>🚴 Your Bikes — All Scott</SectionTitle>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {bikes.map((b, i) => (
+              <div key={i} style={{ background: "#1a1a1a", borderRadius: 10, padding: "14px 18px", borderLeft: `3px solid ${b.color}` }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                  <div>
+                    <div style={{ fontSize: 15, fontWeight: 700, color: "#fff" }}>{b.name}</div>
+                    <div style={{ fontSize: 12, color: "#666", marginTop: 3 }}>{b.rides} rides · {b.elev_m.toLocaleString()} m climbing</div>
+                  </div>
+                  <div style={{ fontSize: 20, fontWeight: 800, color: b.color }}>{imperial ? `${km2mi(b.dist_km)} mi` : `${b.dist_km.toLocaleString()} km`}</div>
+                </div>
+                <div style={{ marginTop: 10, height: 4, background: "#2a2a2a", borderRadius: 2 }}>
+                  <div style={{ height: "100%", width: `${(b.dist_km / 11975) * 100}%`, background: b.color, borderRadius: 2 }} />
+                </div>
+              </div>
+            ))}
+          </div>
+          <SectionTitle>👟 Shoes — Mostly Salomon</SectionTitle>
+          <div style={{ background: "#1a1a1a", borderRadius: 12, padding: 20 }}>
+            <ResponsiveContainer width="100%" height={280}>
+              <BarChart data={shoes} layout="vertical" margin={{ left: 10, right: 20 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
+                <XAxis type="number" tick={{ fill: "#888", fontSize: 11 }} />
+                <YAxis dataKey="name" type="category" tick={{ fill: "#aaa", fontSize: 11 }} width={185} />
+                <Tooltip contentStyle={{ background: "#222", border: "1px solid #444", borderRadius: 8 }} labelStyle={{ color: "#fff" }} formatter={v => [`${v} km`, "Distance"]} />
+                <Bar dataKey="dist_km" name="Distance (km)" fill={GREEN} radius={[0, 4, 4, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <div style={{ marginTop: 12, padding: "14px 18px", background: "#1a1a1a", borderRadius: 10, borderLeft: `3px solid ${STRAVA_ORANGE}` }}>
+            <div style={{ fontSize: 13, color: "#888" }}>🏭 Gear Profile</div>
+            <div style={{ fontSize: 15, color: "#ddd", marginTop: 4 }}>10 bikes, all Scott. 22 pairs of shoes, mostly Salomon. Your gravel Addict 10 leads the fleet at 11,975 km — basically a world tour on one bike.</div>
+          </div>
+        </>)}
+
+        {/* ROUTES */}
+        {activeTab === "Routes" && (<>
+          <SectionTitle>🗺️ Your Most-Ridden Routes</SectionTitle>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {topRoutes.map((r, i) => (
+              <div key={i} style={{ background: "#1a1a1a", borderRadius: 10, padding: "14px 18px", borderLeft: `3px solid ${STRAVA_ORANGE}` }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 15, fontWeight: 700, color: "#fff" }}>{r.name}</div>
+                    <div style={{ fontSize: 12, color: "#666", marginTop: 3 }}>{imperial ? `${km2mi(r.avg_km)} mi` : `${r.avg_km} km`} avg · {r.years}</div>
+                  </div>
+                  <div style={{ textAlign: "right", marginLeft: 12 }}>
+                    <div style={{ fontSize: 20, fontWeight: 800, color: STRAVA_ORANGE }}>×{r.count}</div>
+                    <div style={{ fontSize: 12, color: "#666" }}>{imperial ? `${Math.round(r.total_km*0.621371).toLocaleString()} mi` : `${r.total_km.toLocaleString()} km`} total</div>
+                  </div>
+                </div>
+                <div style={{ marginTop: 10, height: 3, background: "#2a2a2a", borderRadius: 2 }}>
+                  <div style={{ height: "100%", width: `${(r.total_km / 1806) * 100}%`, background: STRAVA_ORANGE, borderRadius: 2 }} />
+                </div>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: 16, padding: "14px 18px", background: "#1a1a1a", borderRadius: 10, borderLeft: `3px solid ${BLUE}` }}>
+            <div style={{ fontSize: 13, color: "#888" }}>📍 Collingwood Area</div>
+            <div style={{ fontSize: 15, color: "#ddd", marginTop: 4 }}>545 rides mentioning Collingwood/C'wood totalling <span style={{ color: BLUE, fontWeight: 700 }}>{imperial ? "12,254 mi" : "19,720 km"}</span> — almost half your total cycling life has been out your front door.</div>
+          </div>
+          <SectionTitle>🏃 Favourite Running Routes</SectionTitle>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {[
+              { name: "C'wood East End Loop", count: "~25+", avg_km: 9.0, note: "Your signature post-knee comeback route" },
+              { name: "Blue|CSC|ASC|GP Ski Club Loop", count: "multiple", avg_km: 21.9, note: "Epic 22km — your longest runs" },
+              { name: "Wasaga Dunes Loop 1", count: "4+", avg_km: 8.3, note: "Beach trail favourite" },
+              { name: "Up 1940 & Down Green World", count: "3+", avg_km: 10.2, note: "Blue Mountain trails" },
+            ].map((r, i) => (
+              <div key={i} style={{ background: "#1a1a1a", borderRadius: 10, padding: "12px 18px", display: "flex", justifyContent: "space-between", alignItems: "center", borderLeft: `3px solid ${GREEN}` }}>
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "#fff" }}>{r.name}</div>
+                  <div style={{ fontSize: 12, color: "#555", marginTop: 2 }}>{r.note}</div>
+                </div>
+                <div style={{ textAlign: "right" }}>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: GREEN }}>{imperial ? `${km2mi(r.avg_km)} mi` : `${r.avg_km} km`}</div>
+                  <div style={{ fontSize: 12, color: "#666" }}>×{r.count}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>)}
+
+        {/* PATTERNS & HR */}
+        {activeTab === "Patterns & HR" && (<>
+          <SectionTitle>📆 Average Activities Per Month</SectionTitle>
+          <div style={{ background: "#1a1a1a", borderRadius: 12, padding: 20 }}>
+            <ResponsiveContainer width="100%" height={320}>
+              <BarChart data={monthlyPattern}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
+                <XAxis dataKey="month" tick={{ fill: "#888", fontSize: 11 }} />
+                <YAxis tick={{ fill: "#888", fontSize: 11 }} />
+                <Tooltip contentStyle={{ background: "#222", border: "1px solid #444", borderRadius: 8 }} labelStyle={{ color: "#fff" }} />
+                <Legend wrapperStyle={{ color: "#888", fontSize: 12 }} />
+                <Bar dataKey="skiing" name="Skiing" fill={BLUE} stackId="a" />
+                <Bar dataKey="cycling" name="Cycling" fill={STRAVA_ORANGE} stackId="a" />
+                <Bar dataKey="running" name="Running" fill={GREEN} stackId="a" />
+                <Bar dataKey="hiking" name="Hiking" fill={YELLOW} stackId="a" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            <div style={{ padding: "14px 18px", background: "#1a1a1a", borderRadius: 10, borderLeft: `3px solid ${BLUE}` }}>
+              <div style={{ fontSize: 13, color: "#888" }}>❄️ Ski season (Jan-Mar)</div>
+              <div style={{ fontSize: 14, color: "#ddd", marginTop: 4 }}>~19 ski days/month. Busiest time of year.</div>
+            </div>
+            <div style={{ padding: "14px 18px", background: "#1a1a1a", borderRadius: 10, borderLeft: `3px solid ${STRAVA_ORANGE}` }}>
+              <div style={{ fontSize: 13, color: "#888" }}>☀️ Cycling peak (Jul-Aug)</div>
+              <div style={{ fontSize: 14, color: "#ddd", marginTop: 4 }}>~16 rides/month. Big distance months.</div>
+            </div>
+          </div>
+          <SectionTitle>❤️ Average Heart Rate by Sport</SectionTitle>
+          <div style={{ background: "#1a1a1a", borderRadius: 12, padding: 20 }}>
+            <ResponsiveContainer width="100%" height={260}>
+              <BarChart data={hrByType} layout="vertical" margin={{ left: 10, right: 40 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
+                <XAxis type="number" domain={[60, 140]} tick={{ fill: "#888", fontSize: 11 }} unit=" bpm" />
+                <YAxis dataKey="sport" type="category" tick={{ fill: "#aaa", fontSize: 12 }} width={70} />
+                <Tooltip contentStyle={{ background: "#222", border: "1px solid #444", borderRadius: 8 }} labelStyle={{ color: "#fff" }} formatter={v => [`${v} bpm`, "Avg HR"]} />
+                <Bar dataKey="avg_hr" name="Avg HR" radius={[0, 4, 4, 0]}>
+                  {hrByType.map((entry, i) => <Cell key={i} fill={entry.color} />)}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <div style={{ marginTop: 12, padding: "14px 18px", background: "#1a1a1a", borderRadius: 10, borderLeft: `3px solid ${RED}` }}>
+            <div style={{ fontSize: 13, color: "#888" }}>❤️ Notes</div>
+            <div style={{ fontSize: 15, color: "#ddd", marginTop: 4 }}>Running is your hardest effort (129 bpm avg). Skiing barely registers at 81 bpm — instructor/patrol mode. Highest ever recorded: <span style={{ color: RED, fontWeight: 700 }}>218 bpm</span>. 🫀</div>
+          </div>
+        </>)}
+
+        {/* RUNNING COMEBACK */}
+        {activeTab === "Running Comeback" && (<>
+          <SectionTitle>🦵 Running Comeback Tracker</SectionTitle>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(170px, 1fr))", gap: 12 }}>
+            <StatCard label="Knee Injury" value="Mar 2023" sub="Injured Mar, rebuilt Apr 26" color={RED} icon="🦵" />
+            <StatCard label="First Run Back" value="Sep 2023" sub="6 months later" color={YELLOW} icon="🏃" />
+            <StatCard label="Post-Injury Runs" value="47" sub="Slow & steady" color={GREEN} icon="📊" />
+            <StatCard label="Longest Post-Injury" value={imperial ? "7.5 mi" : "12.0 km"} sub="Aug 28, 2025" color={GREEN} icon="📏" />
+          </div>
+
+          <SectionTitle>📅 Comeback Run Volume by Period</SectionTitle>
+          <div style={{ background: "#1a1a1a", borderRadius: 12, padding: 20 }}>
+            <ResponsiveContainer width="100%" height={260}>
+              <BarChart data={comebackRuns}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
+                <XAxis dataKey="period" tick={{ fill: "#888", fontSize: 10 }} />
+                <YAxis tick={{ fill: "#888", fontSize: 11 }} />
+                <Tooltip contentStyle={{ background: "#222", border: "1px solid #444", borderRadius: 8 }} labelStyle={{ color: "#fff" }} />
+                <Bar dataKey="count" name="Runs" fill={GREEN} radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          <SectionTitle>📈 Avg Distance Per Period</SectionTitle>
+          <div style={{ background: "#1a1a1a", borderRadius: 12, padding: 20 }}>
+            <ResponsiveContainer width="100%" height={200}>
+              <AreaChart data={comebackRuns}>
+                <defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={GREEN} stopOpacity={0.3}/><stop offset="95%" stopColor={GREEN} stopOpacity={0}/></linearGradient></defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
+                <XAxis dataKey="period" tick={{ fill: "#888", fontSize: 10 }} />
+                <YAxis tick={{ fill: "#888", fontSize: 11 }} unit={imperial ? " mi" : " km"} />
+                <Tooltip contentStyle={{ background: "#222", border: "1px solid #444", borderRadius: 8 }} labelStyle={{ color: "#fff" }} formatter={v => [imperial ? `${km2mi(v)} mi` : `${v} km`, "Avg Distance"]} />
+                <Area type="monotone" dataKey="avg_km" stroke={GREEN} fill="url(#cg)" strokeWidth={2} dot={{ fill: GREEN, r: 4 }} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+
+          <SectionTitle>🗓️ The Story So Far</SectionTitle>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {[
+              { date: "Mar 2023", event: "Left knee injury — inoperable until inflammation subsided, reconstruction Apr 26", color: RED, detail: "Running essentially stops for 6 months" },
+              { date: "Sep 2023", event: "First run back", color: YELLOW, detail: "C'wood East End Loop — 9 km, careful and slow" },
+              { date: "Nov 2023", event: "Cruise ship chaos 🚢", color: "#94a3b8", detail: "GPS drift makes it look like you ran 40 km in 1 hr" },
+              { date: "May–Jun 2024", event: "Biggest comeback block", color: GREEN, detail: "10 runs in 6 weeks — C'wood East End Loop becoming a staple" },
+              { date: "Aug 2025", event: "Longest post-injury run", color: GREEN, detail: "12.0 km on Georgian Bay — building back nicely" },
+              { date: "Now", event: "Missing: running partner 🇭🇺", color: BLUE, detail: "Knee is solid. Laszlo is in Sopron. The search continues." },
+            ].map((e, i) => (
+              <div key={i} style={{ background: "#1a1a1a", borderRadius: 10, padding: "12px 18px", display: "flex", gap: 16, alignItems: "flex-start", borderLeft: `3px solid ${e.color}` }}>
+                <div style={{ minWidth: 80, fontSize: 12, color: "#666", paddingTop: 2 }}>{e.date}</div>
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: e.color }}>{e.event}</div>
+                  <div style={{ fontSize: 13, color: "#777", marginTop: 2 }}>{e.detail}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ marginTop: 20, padding: "16px 18px", background: "#0f1f0f", borderRadius: 10, border: `1px solid #1a3a1a` }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: GREEN }}>💚 The Data Says...</div>
+            <div style={{ fontSize: 14, color: "#bbb", marginTop: 6, lineHeight: 1.6 }}>
+              You're running again. Not at 2021 volume (150 runs) but the knee isn't the limiter anymore — it's motivation and a partner. Your post-injury runs are consistently 8-12 km which is solid base fitness. If you found a Laszlo-replacement, you'd be back to 50+ runs a year within a season.
+            </div>
+          </div>
+        </>)}
+
+        <div style={{ marginTop: 40, textAlign: "center", color: "#444", fontSize: 12 }}>
+          Data from Strava · {totals.activities.toLocaleString()} activities · 2012–2026 · Refreshes nightly · Built by Emma 🤖
+        </div>
+      </div>
+
+      {activeTab === "Components" && (
+        <div style={{ padding: "24px 32px" }}>
+          <ComponentsTab components={components} setComponents={setComponents} />
+        </div>
       )}
-    </div>`;
-
-  // SKIING
-  document.getElementById('sk').innerHTML=`
-    <div class="sg">
-      ${sc2('Total Ski Days',(t.skiDays||0).toLocaleString(),'#1d9bf0')}
-      ${sc2('25-26 Days','107','#1d9bf0')}
-      ${sc2('25-26 Vertical',fV(909519),'#1d9bf0')}
-      ${sc2('Best Day Vert',fV(14833),'#a855f7','Mar 27, 2026')}
+      {activeTab === "Body Stats" && (
+        <div style={{ padding: "24px 32px" }}>
+          <BodyStatsTab bodyStats={bodyStats} setBodyStats={setBodyStats} uploading={uploading} setUploading={setUploading} />
+        </div>
+      )}
     </div>
-    ${card('⛷️ Seasonal Vertical ('+vu()+')',svgBar(skc,'season',['vert_m'],['#1d9bf0'],220))}
-    ${card('📅 Ski Days per Season',svgBar(D.skiSeasons,'season',['days'],['#38bdf8'],160))}
-    <div class="g2">
-      ${card('🏆 Top 5 Ski Days',rows(D.topSki,r=>r.name,r=>fV(r.vert_m),'#1d9bf0'))}
-      ${card('📋 Last 7 Days — Skiing','<div class="empty">Season is over — see you next November! ⛷️</div>')}
-    </div>`;
-
-  // BODY STATS
-  const latest=BS[BS.length-1];
-  const wt=imp?v=>(v*0.453592).toFixed(1)+' kg':v=>v+' lb';
-  document.getElementById('bs').innerHTML=`
-    <div class="sg">
-      ${sc2('Weight',latest.weight_lb+' lb','#fc4c02','latest')}
-      ${sc2('BMI',latest.bmi,'#fff')}
-      ${sc2('Body Fat',latest.body_fat_pct+'%','#f87171')}
-      ${sc2('Muscle Mass',latest.muscle_mass_lb+' lb','#22c55e')}
-      ${sc2('Visceral Fat',latest.visceral_fat,'#fff')}
-      ${sc2('Metabolic Age',latest.metabolic_age,'#1d9bf0')}
-    </div>
-    ${card('⚖️ Weight Trend (lb)',svgBar(BS,'measured_at',['weight_lb'],['#fc4c02'],180))}
-    ${card('📋 All Body Stats Readings',
-      '<div style="overflow-x:auto"><table><tr><th>Date</th><th>Weight</th><th>BMI</th><th>Body Fat</th><th>Muscle</th><th>Visceral Fat</th><th>Met. Age</th></tr>'+
-      [...BS].reverse().map(r=>`<tr>
-        <td style="color:#777;white-space:nowrap">${new Date(r.measured_at).toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'})}</td>
-        <td style="font-weight:600">${r.weight_lb} lb</td>
-        <td>${r.bmi}</td>
-        <td style="color:#f87171">${r.body_fat_pct}%</td>
-        <td style="color:#22c55e">${r.muscle_mass_lb} lb</td>
-        <td>${r.visceral_fat}</td>
-        <td style="color:#1d9bf0">${r.metabolic_age}</td>
-      </tr>`).join('')+'</table></div>'
-    )}`;
+  );
 }
 
-render();
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<Dashboard />);
 </script>
 </body>
 </html>
