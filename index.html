@@ -4,30 +4,39 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Todd's Strava Dashboard</title>
-<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#111;color:#fff;font-family:'Inter',sans-serif}
+body{background:#111;color:#fff;font-family:'Inter',sans-serif;min-height:100vh}
+#root{min-height:100vh}
 </style>
 </head>
 <body>
-<div id="root"></div>
+<div id="root"><div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:Inter,sans-serif;color:#666;font-size:14px">Initializing...</div></div>
+
+<!-- Load React first, synchronously -->
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js" crossorigin></script>
+
 <script>
+// Verify libraries loaded
+if (!window.React) { document.getElementById('root').innerHTML = '<div style="color:red;padding:40px">Error: React failed to load</div>'; throw new Error('React missing'); }
+if (!window.Recharts) { document.getElementById('root').innerHTML = '<div style="color:red;padding:40px">Error: Recharts failed to load</div>'; throw new Error('Recharts missing'); }
+
 // Embedded data
 window.__EMBEDDED__ = {"strava": {"totals": {"activities": 3908, "distance_km": 137613, "hours": 7750, "elev_m": 6467829, "rides": 1366, "skiDays": 915, "runs": 834, "hikes": 377}, "yearly": [{"year": "2012", "count": 55, "rides": 55, "runs": 0, "ski": 0, "hikes": 0, "other": 0, "ride_km": 2289, "run_km": 0, "hike_km": 0, "time_hrs": 98}, {"year": "2013", "count": 18, "rides": 18, "runs": 0, "ski": 0, "hikes": 0, "other": 0, "ride_km": 619, "run_km": 0, "hike_km": 0, "time_hrs": 24}, {"year": "2014", "count": 62, "rides": 62, "runs": 0, "ski": 0, "hikes": 0, "other": 0, "ride_km": 2163, "run_km": 0, "hike_km": 0, "time_hrs": 81}, {"year": "2015", "count": 216, "rides": 119, "runs": 44, "ski": 0, "hikes": 37, "other": 16, "ride_km": 4582, "run_km": 263, "hike_km": 282, "time_hrs": 279}, {"year": "2016", "count": 349, "rides": 84, "runs": 121, "ski": 73, "hikes": 21, "other": 50, "ride_km": 3199, "run_km": 1003, "hike_km": 429, "time_hrs": 423}, {"year": "2017", "count": 299, "rides": 68, "runs": 119, "ski": 88, "hikes": 5, "other": 19, "ride_km": 3014, "run_km": 1073, "hike_km": 61, "time_hrs": 456}, {"year": "2018", "count": 300, "rides": 84, "runs": 83, "ski": 89, "hikes": 20, "other": 24, "ride_km": 4207, "run_km": 822, "hike_km": 288, "time_hrs": 589}, {"year": "2019", "count": 426, "rides": 133, "runs": 122, "ski": 105, "hikes": 35, "other": 31, "ride_km": 7491, "run_km": 1141, "hike_km": 462, "time_hrs": 879}, {"year": "2020", "count": 295, "rides": 89, "runs": 94, "ski": 80, "hikes": 20, "other": 12, "ride_km": 5668, "run_km": 894, "hike_km": 231, "time_hrs": 621}, {"year": "2021", "count": 347, "rides": 96, "runs": 150, "ski": 53, "hikes": 35, "other": 13, "ride_km": 5834, "run_km": 1389, "hike_km": 408, "time_hrs": 653}, {"year": "2022", "count": 328, "rides": 84, "runs": 48, "ski": 102, "hikes": 49, "other": 45, "ride_km": 4041, "run_km": 483, "hike_km": 358, "time_hrs": 686}, {"year": "2023", "count": 374, "rides": 128, "runs": 19, "ski": 55, "hikes": 55, "other": 117, "ride_km": 3604, "run_km": 263, "hike_km": 637, "time_hrs": 633}, {"year": "2024", "count": 333, "rides": 149, "runs": 27, "ski": 83, "hikes": 20, "other": 54, "ride_km": 6932, "run_km": 248, "hike_km": 418, "time_hrs": 801}, {"year": "2025", "count": 383, "rides": 176, "runs": 6, "ski": 101, "hikes": 67, "other": 33, "ride_km": 8715, "run_km": 48, "hike_km": 810, "time_hrs": 1031}, {"year": "2026*", "count": 123, "rides": 21, "runs": 1, "ski": 86, "hikes": 13, "other": 2, "ride_km": 1222, "run_km": 6, "hike_km": 50, "time_hrs": 495}], "skiSeasons": [{"season": "15-16", "days": 66, "vert_m": 209603}, {"season": "16-17", "days": 75, "vert_m": 323836}, {"season": "17-18", "days": 81, "vert_m": 447464}, {"season": "18-19", "days": 107, "vert_m": 617286}, {"season": "19-20", "days": 94, "vert_m": 524467}, {"season": "20-21", "days": 57, "vert_m": 329320}, {"season": "21-22", "days": 96, "vert_m": 660360}, {"season": "22-23", "days": 65, "vert_m": 486216}, {"season": "23-24", "days": 73, "vert_m": 616160}, {"season": "24-25", "days": 94, "vert_m": 764368}, {"season": "25-26", "days": 107, "vert_m": 909519}], "topRides": [{"name": "C'wood|Phelpston|Penetang|Wasaga", "date": "Aug 14, 2025", "dist_km": 164.33, "elev_m": 804}, {"name": "C'wood|Orr Lake|Balm Beach|Wasaga", "date": "Aug 29, 2024", "dist_km": 147.73, "elev_m": 590}, {"name": "C'wood|Wasaga|NewLowell|Angus", "date": "Sep 20, 2025", "dist_km": 143.24, "elev_m": 354}, {"name": "C'wood|Orr Lake|Balm Beach|Wasaga", "date": "Aug 14, 2024", "dist_km": 140.87, "elev_m": 558}, {"name": "C'wood|Orr Lake|Balm Beach|Wasaga", "date": "Sep 12, 2024", "dist_km": 140.53, "elev_m": 577}], "topSki": [{"name": "Blue Mtn - Mar 27, 2026", "date": "Mar 27, 2026", "vert_m": 14833}, {"name": "Blue Mtn - Mar 29, 2022", "date": "Mar 29, 2022", "vert_m": 13723}, {"name": "Blue Mtn - Mar 28, 2026", "date": "Mar 28, 2026", "vert_m": 13718}, {"name": "Blue Mtn - Apr 1, 2022", "date": "Apr 1, 2022", "vert_m": 13605}, {"name": "Blue Mtn - Feb 8, 2024", "date": "Feb 8, 2024", "vert_m": 13366}], "topRuns": [{"name": "Blue|CSC|ASC|GP Ski Club Loop", "date": "Jun 11, 2021", "dist_km": 22.74}, {"name": "Blue|CSC|ASC|GP Ski Club Loop", "date": "Nov 4, 2018", "dist_km": 21.14}, {"name": "HB.C to Tommy Thompson Park", "date": "Apr 21, 2018", "dist_km": 19.78}, {"name": "C'wood Full Loop", "date": "May 3, 2018", "dist_km": 17.06}], "recentRides": [{"name": "C'Wood|W.B.|Stayner|Blue Loop", "date": "2026-05-19", "dist_km": 68.9, "time_hrs": 2.9, "elev_m": 207}, {"name": "C'wood|Phelpston|Wyeville|Wasaga", "date": "2026-05-18", "dist_km": 117.3, "time_hrs": 4.5, "elev_m": 431}, {"name": "C'wood East End Loop", "date": "2026-05-16", "dist_km": 11.7, "time_hrs": 0.7, "elev_m": 17}, {"name": "C'Wood|Stayner|W.B. Gravel Loop", "date": "2026-05-15", "dist_km": 106.3, "time_hrs": 4.6, "elev_m": 198}, {"name": "C'wood|BlueMtns|Wasaga Beach Trail", "date": "2026-05-11", "dist_km": 71.0, "time_hrs": 3.4, "elev_m": 217}], "recentSki": [], "recentRunHike": [{"name": "Lake Couchiching Beer Loop", "date": "2026-05-17", "dist_km": 3.9, "time_hrs": 0.9, "elev_m": 38, "type": "Walk"}, {"name": "12th Sideroad & 3rd Line O&B", "date": "2026-05-16", "dist_km": 12.2, "time_hrs": 2.4, "elev_m": 347, "type": "Hike"}, {"name": "12th Sideroad & 3rd Line O&B", "date": "2026-05-12", "dist_km": 12.1, "time_hrs": 2.4, "elev_m": 349, "type": "Hike"}, {"name": "Blue|CSC|ASC|GP Ski Club Loop", "date": "2026-05-10", "dist_km": 19.4, "time_hrs": 4.4, "elev_m": 447, "type": "Hike"}, {"name": "12th Sideroad & 3rd Line O&B", "date": "2026-05-09", "dist_km": 12.0, "time_hrs": 2.4, "elev_m": 349, "type": "Hike"}], "lastUpdated": "2026-05-20T07:06:47.035Z"}, "bodyStats": [{"measured_at": "2026-01-05", "weight_lb": 166.8, "bmi": 24.2, "body_fat_pct": 14.3, "muscle_mass_lb": 134.3, "visceral_fat": 7, "metabolic_age": 60, "skeletal_muscle_pct": 40.9, "body_water_pct": 54.6, "protein_pct": 25.8, "bmr_kcal": 1559, "rmr_kcal": 1690}, {"measured_at": "2026-01-08", "weight_lb": 164.0, "bmi": 23.7, "body_fat_pct": 13.9, "muscle_mass_lb": 132.3, "visceral_fat": 7, "metabolic_age": 59, "skeletal_muscle_pct": 41.4, "body_water_pct": 54.9, "protein_pct": 25.8, "bmr_kcal": 1540, "rmr_kcal": 1677}, {"measured_at": "2026-01-10", "weight_lb": 163.8, "bmi": 23.7, "body_fat_pct": 13.8, "muscle_mass_lb": 132.7, "visceral_fat": 7, "metabolic_age": 59, "skeletal_muscle_pct": 41.2, "body_water_pct": 54.7, "protein_pct": 25.8, "bmr_kcal": 1552, "rmr_kcal": 1685}, {"measured_at": "2026-01-15", "weight_lb": 163.6, "bmi": 23.7, "body_fat_pct": 13.8, "muscle_mass_lb": 132.5, "visceral_fat": 7, "metabolic_age": 59, "skeletal_muscle_pct": 41.1, "body_water_pct": 54.8, "protein_pct": 25.8, "bmr_kcal": 1548, "rmr_kcal": 1682}, {"measured_at": "2026-02-01", "weight_lb": 162.4, "bmi": 23.5, "body_fat_pct": 13.5, "muscle_mass_lb": 132.0, "visceral_fat": 7, "metabolic_age": 59, "skeletal_muscle_pct": 41.4, "body_water_pct": 55.0, "protein_pct": 25.9, "bmr_kcal": 1538, "rmr_kcal": 1672}, {"measured_at": "2026-02-10", "weight_lb": 161.8, "bmi": 23.4, "body_fat_pct": 13.4, "muscle_mass_lb": 131.8, "visceral_fat": 7, "metabolic_age": 58, "skeletal_muscle_pct": 41.5, "body_water_pct": 55.1, "protein_pct": 25.9, "bmr_kcal": 1534, "rmr_kcal": 1668}, {"measured_at": "2026-02-20", "weight_lb": 161.2, "bmi": 23.3, "body_fat_pct": 13.3, "muscle_mass_lb": 131.5, "visceral_fat": 7, "metabolic_age": 58, "skeletal_muscle_pct": 41.6, "body_water_pct": 55.2, "protein_pct": 25.9, "bmr_kcal": 1530, "rmr_kcal": 1664}, {"measured_at": "2026-03-01", "weight_lb": 160.6, "bmi": 23.2, "body_fat_pct": 13.2, "muscle_mass_lb": 131.2, "visceral_fat": 6, "metabolic_age": 58, "skeletal_muscle_pct": 41.7, "body_water_pct": 55.3, "protein_pct": 26.0, "bmr_kcal": 1526, "rmr_kcal": 1660}, {"measured_at": "2026-03-15", "weight_lb": 160.0, "bmi": 23.2, "body_fat_pct": 13.0, "muscle_mass_lb": 131.0, "visceral_fat": 6, "metabolic_age": 57, "skeletal_muscle_pct": 41.8, "body_water_pct": 55.4, "protein_pct": 26.0, "bmr_kcal": 1522, "rmr_kcal": 1656}, {"measured_at": "2026-04-01", "weight_lb": 159.4, "bmi": 23.1, "body_fat_pct": 12.9, "muscle_mass_lb": 130.8, "visceral_fat": 6, "metabolic_age": 57, "skeletal_muscle_pct": 41.9, "body_water_pct": 55.5, "protein_pct": 26.0, "bmr_kcal": 1518, "rmr_kcal": 1652}, {"measured_at": "2026-04-15", "weight_lb": 158.8, "bmi": 23.0, "body_fat_pct": 12.7, "muscle_mass_lb": 130.5, "visceral_fat": 6, "metabolic_age": 57, "skeletal_muscle_pct": 42.0, "body_water_pct": 55.6, "protein_pct": 26.1, "bmr_kcal": 1514, "rmr_kcal": 1648}, {"measured_at": "2026-05-01", "weight_lb": 158.2, "bmi": 22.9, "body_fat_pct": 12.6, "muscle_mass_lb": 130.2, "visceral_fat": 6, "metabolic_age": 56, "skeletal_muscle_pct": 42.1, "body_water_pct": 55.7, "protein_pct": 26.1, "bmr_kcal": 1510, "rmr_kcal": 1644}, {"measured_at": "2026-05-15", "weight_lb": 157.6, "bmi": 22.8, "body_fat_pct": 12.4, "muscle_mass_lb": 130.0, "visceral_fat": 6, "metabolic_age": 56, "skeletal_muscle_pct": 42.2, "body_water_pct": 55.8, "protein_pct": 26.1, "bmr_kcal": 1506, "rmr_kcal": 1640}]};
 
-// Shim entity APIs
+// Entity shims
 const StravaCache = { filter: async () => [{ data: JSON.stringify(window.__EMBEDDED__.strava) }] };
 const BodyStats = { list: async () => window.__EMBEDDED__.bodyStats, create: async () => {} };
 const BikeComponent = { list: async () => [], create: async () => {}, update: async () => {} };
 
-// React hooks shim (compiled code uses React.useState etc via UMD)
-const { useState, useEffect, useRef, useCallback } = React;
-const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Area, AreaChart, Cell, ReferenceLine } = Recharts;
+// Destructure React & Recharts into global scope for compiled code
+const { useState, useEffect, useRef, useCallback, useMemo } = React;
+const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Area, AreaChart, Cell, ReferenceLine, LineChart, Line } = Recharts;
 </script>
+
 <script>
 const STRAVA_ORANGE = "#fc4c02";
 const BLUE = "#1d9bf0";
@@ -1621,7 +1630,7 @@ function BodyStatsTab({
     }
   }, r.notes || ""))))))));
 }
-export default function Dashboard() {
+function Dashboard() {
   var _totals$activities, _totals$activities2, _totals$hours, _totals$rides, _totals$skiDays, _totals$runs, _totals$hikes;
   const [activeTab, setActiveTab] = useState("Overview");
   const [liveData, setLiveData] = useState(null);
@@ -3709,9 +3718,14 @@ export default function Dashboard() {
   })));
 }
 
-// Mount
-const _root = ReactDOM.createRoot(document.getElementById('root'));
-_root.render(React.createElement(Dashboard));
+// Mount app
+try {
+  const container = document.getElementById('root');
+  const root = ReactDOM.createRoot(container);
+  root.render(React.createElement(Dashboard));
+} catch(e) {
+  document.getElementById('root').innerHTML = '<div style="color:red;padding:40px;font-family:monospace">Mount error: ' + e.message + '</div>';
+}
 </script>
 </body>
 </html>
